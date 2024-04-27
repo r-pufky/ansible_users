@@ -1,0 +1,19 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Password Hash Defaults
+###############################################################################
+# Defaults for each algorithm for hashing passwords.
+#
+# All systems should be using sha512 or bcrypt.
+#
+# Reference:
+# * https://man7.org/linux/man-pages/man3/crypt.3.html
+# * https://docs.ansible.com/ansible/devel/collections/ansible/builtin/password_hash_filter.html
+# * https://github.com/ansible/ansible/blob/d0b6ce7473e1ca475b6a3e9334426063a4d189f7/lib/ansible/utils/encrypt.py#L77
+
+users_default_password_algo_constraints:
+  md5: {id: '1', salt_length: 8, rounds: '', salt_exact: false, ident: ''}
+  bcrypt: {id: '2b', salt_length: 22, rounds: 12, salt_exact: true, ident: '2b'}
+  sha256: {id: '5', salt_length: 16, rounds: 535000, salt_exact: false, ident: ''}
+  sha512: {id: '6', salt_length: 16, rounds: 656000, salt_exact: false, ident: ''}

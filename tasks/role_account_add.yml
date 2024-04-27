@@ -1,0 +1,72 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Add User/Group for Role
+###############################################################################
+# Adds a given user/group for calling role.
+
+- name: 'Role account add | query user {{ users_role_user.name | default("") }}'
+  ansible.builtin.command: 'id {{ users_role_user.name }}'
+  register: _users_role_user_exists
+  changed_when: _users_role_user_exists.rc > 0
+  failed_when: false
+  when: users_role_create_user
+
+- name: 'Role account add | query group {{ users_role_group.name | default("") }}'
+  ansible.builtin.command: 'groups {{ users_role_group.name }}'
+  register: _users_role_group_exists
+  changed_when: _users_role_group_exists.rc > 0
+  failed_when: false
+  when: users_role_create_group
+
+- name: 'Role account add | create group {{ users_role_group.name | default("") }}'
+  ansible.builtin.group:
+    force: '{{ users_role_group.force | default(false) }}'
+    gid: '{{ users_role_group.gid | default(omit) }}'
+    local: '{{ users_role_group.local | default(false) }}'
+    name: '{{ users_role_group.name }}'
+    non_unique: '{{ users_role_group.non_unique | default(false) }}'
+    state: 'present'
+    system: '{{ users_role_group.system | default(false) }}'
+  when: users_role_create_group and _users_role_group_exists.rc != 0
+
+- name: 'Role account add | create user {{ users_role_user.name | default("") }} {{ users_role_user.comment | default("") }}'  # noqa name[template] readability
+  ansible.builtin.user:
+    append: '{{ users_role_user.append | default(false) }}'
+    authorization: '{{ users_role_user.authorization | default(omit) }}'
+    comment: '{{ users_role_user.comment | default(omit) }}'
+    create_home: '{{ users_role_user.create_home | default(true) }}'
+    expires: '{{ users_role_user.expires | default(-1) }}'
+    force: '{{ users_role_user.force | default(false) }}'
+    generate_ssh_key: '{{ users_role_user.generate_ssh_key | default(false) }}'
+    group: '{{ users_role_user.group | default(omit) }}'
+    groups: '{{ users_role_user.groups | default(omit) }}'
+    hidden: '{{ users_role_user.hidden | default(omit) }}'
+    home: '{{ users_role_user.home | default("/nonexistent") }}'
+    local: '{{ users_role_user.local | default(false) }}'
+    login_class: '{{ users_role_user.login_class | default(omit) }}'
+    move_home: '{{ users_role_user.move_home | default(false) }}'
+    name: '{{ users_role_user.name }}'
+    non_unique: '{{ users_role_user.non_unique | default(false) }}'
+    password: '{{ _users_pass_hash if _users_pass_hash is defined else users_role_user.password | default("!") }}'
+    password_expire_max: '{{ users_role_user.password_expire_max | default(omit) }}'
+    password_expire_min: '{{ users_role_user.password_expire_min | default(omit) }}'
+    password_expire_warn: '{{ users_role_user.password_expire_warn | default(omit) }}'
+    password_lock: '{{ users_role_user.password_lock | default(false) }}'
+    profile: '{{ users_role_user.profile | default(omit) }}'
+    remove: '{{ users_role_user.remove | default(false) }}'
+    role: '{{ users_role_user.role | default(omit) }}'
+    seuser: '{{ users_role_user.seuser | default(omit) }}'
+    shell: '{{ users_role_user.shell | default("/usr/sbin/nologin") }}'
+    skeleton: '{{ users_role_user.skeleton | default(omit) }}'
+    ssh_key_bits: '{{ users_role_user.ssh_key_bits | default(omit) }}'
+    ssh_key_comment: '{{ users_role_user.ssh_key_comment | default("ansible-generated") }}'
+    ssh_key_file: '{{ users_role_user.ssh_key_file | default(".ssh/id_rsa") }}'
+    ssh_key_passphrase: '{{ users_role_user.ssh_key_passphrase | default(omit) }}'
+    ssh_key_type: '{{ users_role_user.ssh_key_type | default("rsa") }}'
+    state: 'present'
+    system: '{{ users_role_user.system | default(false) }}'
+    uid: '{{ users_role_user.uid | default(omit) }}'
+    umask: '{{ users_role_user.umask | default(omit) }}'
+    update_password: '{{ users_role_user.update_password | default("always") }}'
+  when: users_role_create_user and _users_role_user_exists.rc != 0

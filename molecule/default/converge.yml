@@ -1,0 +1,99 @@
+---
+# Idempotent testing disabled as specific commands will never be idempotent.
+#
+# Reference:
+# * https://github.com/ansible/molecule/issues/816
+
+- name: 'Default | converge'
+  hosts: all
+  gather_facts: true
+  tags: 'molecule-idempotence-notest'
+  tasks:
+    - name: 'Default | converge | create a user with default values'
+      ansible.builtin.include_role:
+        name: 'users'
+        tasks_from: 'role_account_add'
+      vars:
+        users_role_create_group: false
+        users_role_user:
+          name: 'user_all_defaults_valid'
+
+    - name: 'Default | converge | create a group with default values'
+      ansible.builtin.include_role:
+        name: 'users'
+        tasks_from: 'role_account_add'
+      vars:
+        users_role_create_user: false
+        users_role_group:
+          name: 'group_all_defaults_valid'
+
+    - name: 'Default | converge | create a group with ALL values'
+      ansible.builtin.include_role:
+        name: 'users'
+        tasks_from: 'role_account_add'
+      vars:
+        users_role_create_user: false
+        users_role_group:
+          force: false
+          gid: 1500
+          local: false
+          name: 'group_all_specified_values'
+          non_unique: false
+          system: true
+
+    - name: 'Default | converge | create a user with ALL values'
+      ansible.builtin.include_role:
+        name: 'users'
+        tasks_from: 'role_account_add'
+      vars:
+        users_role_create_group: false
+        users_role_user:
+          append: false
+          authorization: ''
+          comment: '(logins disabled)'
+          create_home: true
+          expires: -1
+          force: false
+          generate_ssh_key: true
+          group: 'group_all_specified_values'
+          groups: ['staff']
+          hidden: false
+          home: '/etc/test_location'
+          local: false
+          login_class: ''
+          move_home: false
+          name: 'user_all_specified_values'
+          non_unique: false
+          password: '*'  # Default is '!'
+          password_expire_max: 365
+          password_expire_min: 300
+          password_expire_warn: 15
+          password_lock: false
+          profile: ''
+          remove: false
+          role: ''
+          shell: '/bin/bash'
+          skeleton: '/etc/skel'
+          ssh_key_bits: 1024
+          ssh_key_comment: 'for testing use only'
+          ssh_key_file: '.ssh/id_rsa'
+          ssh_key_passphrase: ''
+          ssh_key_type: 'rsa'
+          system: true
+          uid: 1500
+          umask: '0277'
+          update_password: 'always'
+
+
+    - name: 'Default | converge | create a user/group simultaneously'
+      ansible.builtin.include_role:
+        name: 'users'
+        tasks_from: 'role_account_add'
+      vars:
+        users_role_user:
+          name: 'user_simul_user'
+          groups: 'user_simul_group'
+          uid: 1550
+        users_role_group:
+          name: 'user_simul_group'
+          gid: 1550
