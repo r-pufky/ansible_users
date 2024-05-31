@@ -1,0 +1,350 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Group Definitions
+###############################################################################
+# Group definitions are automatically detect based on the users_group_ prefix
+# in host inventory and loaded when referencing group names in
+# users_group_{LABEL} or users_user_{LABEL}.
+#
+# Generally group definitions should be available via group_vars.
+#
+# users_group_{LABEL}:
+#     dict group definition from ansible.builtin.group. Use {LABEL} to
+#     reference the group definition in applying users/groups.
+#   force: bool - delete group even if it is a primary users' group
+#       Default: False.
+#   gid: int - group id
+#       Default: omit (auto generated).
+#   local: bool - force use of local command alternatives
+#       Default: False.
+#   name: str - group name
+#   non_unique: bool - force non-unique GID (required gid)
+#       Default: False.
+#   system: bool - create a system group
+#       Default: False.
+#
+# users_group_examplegroup:
+#   name: 'examplegroup'
+#   gid: 701
+#
+# users_group_another_group:
+#   name: 'another_group'
+#   gid: 1010
+#   non_unique: false
+#   state: 'present'
+#
+# users_accounts_groups:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# users_accounts_users:
+#   - 'exampleuser'
+#
+# Default: no default option. Explicitly define a unique variable for each.
+#
+# Reference:
+# * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
+
+###############################################################################
+# User Definitions
+###############################################################################
+# User definitions are automatically detected based on the users_user_ prefix
+# in host inventory and loaded when referencing user names in
+# users_user_{LABEL}.
+#
+# Generally user definitions should be available via group_vars.
+#
+# users_user_{LABEL}:
+#     dict user definition from ansible.builtin.user with extensions. Use
+#     {LABEL} to reference the group definition in applying users/groups.
+#   append: bool - True add users to groups without removing current ones
+#       False remove user from unspecified groups.
+#       Default: False.
+#   authorization: str - set user authorization
+#       Default: omit (no authorizations).
+#   comment: str - user comment (GECOS) field
+#       Default: omit (empty).
+#   create_home: bool - create home when user created or non-existent
+#       Default: True.
+#   expires: float - Epoch time to expire user account
+#       Values:
+#         -1: remove expiry time
+#          *: Unix Epoch account expiry time
+#       Default: -1.
+#   force: bool - force removal of user owned files (if user deleted) or
+#       overwriting existing SSH keys.
+#       Default: False.
+#   generate_ssh_key: bool - generate a user SSH key on creation
+#       Default: False.
+#   group: str - user primary group
+#       Must be defined to use extended SSH options. Automatically created if
+#       it does not exist.
+#       Special Case: see include_group option, which will create the
+#           associated users_group_{LABEL} before creating this user account
+#           allowing for custom/statically definied primary groups.
+#       Default: omit (system default).
+#   groups: list of str - additional groups user is a member of
+#       User removed from all other groups unless append is used.
+#       Default: omit (no groups).
+#   hidden: bool - hide user from login window (OSX only)
+#       Default: omit (False).
+#   home: str - user home directory
+#       Must be defined to use extended SSH options.
+#       Special Case:
+#         '/nonexistent': debian canonical non-existent home directory.
+#                   omit: created in /home/{USER} if enabled.
+#       Default: omit (system default).
+#   local: bool - force use of local command alternatives
+#       Default: False.
+#   login_class: str - User login class (Generally BSD)
+#       Default: omit (no class).
+#   move_home: bool - move user's old home to home if it does not exist and old
+#       home already exists.
+#       Default: False.
+#   name: str - user name
+#   non_unique: bool - use a non-unique UID
+#       Default: False.
+#   password: str - password hash (must be hashed)
+#       Generate SHA-512 passwd hash via 'mkpasswd -m sha-512'.
+#       Packages:
+#         Debian: 'apt install whois'
+#         Manjaro: 'pamac install mkpasswd' (remove 'expect', conflicts)
+#       Values:
+#         !: disabled/locked password
+#         *: disabled/locked password
+#       Default: '!'.
+#   password_expire_max: int - max number of days between password change
+#       Default: omit (disabled).
+#   password_expire_min: int - min number of days between password change
+#       Default: omit (disabled).
+#   password_expire_warn: int - number of days of warning before expiry
+#       Default: omit (disabled).
+#   password_lock: bool - lock the password. Does not disable the user.
+#       Default: False.
+#   profile: str - set user profile (illumos/solaris)
+#       Default: omit (no profile).
+#   remove: bool - attempt to remove user directories if state is absent
+#       Default: False.
+#   role: str - user role (illumos/solaris)
+#       Default: omit (no role).
+#   seuser: str - set seuser type (user_u) on selinux enabled systems
+#       Default: omit (not set).
+#   shell: str - user shell
+#       Special Case: '/usr/sbin/nologin' no login.
+#       Default: '/bin/bash'.
+#   skeleton: str - set a home skeleton directory
+#       Default: omit (system default).
+#   ssh_key_bits: int - number of bits in SSH key to create
+#       See extended SSH options (below) for explicitly managing ssh key.
+#       Default: omit (system default).
+#   ssh_key_comment: str - SSH key comment
+#       See extended SSH options (below) for explicitly managing ssh key.
+#       Default: 'ansible-generated'.
+#   ssh_key_file: str - path to SSH key filename
+#       See extended SSH options (below) for explicitly managing ssh key.
+#       Default: '.ssh/id_rsa'.
+#   ssh_key_passphrase: str - SSH key password
+#       See extended SSH options (below) for explicitly managing ssh key.
+#       Special Case: '' disables password (no passphrase).
+#       Default: Random 32 character alphanumeric string.
+#   ssh_key_type: str - SSH key type
+#       See extended SSH options (below) for explicitly managing ssh key.
+#       Default: 'rsa'.
+#   system: bool - create system account
+#       Default: False.
+#   uid: int - user UID
+#       Default: omit (auto generated).
+#   umask: str - Umask of the user
+#       Requires not using 'local'.
+#       Default: omit (system default).
+#   update_password: str - password update policy
+#       Values:
+#         always: update passwords if they differ
+#         on_create: only set password for new user creation
+#       Default: 'always'.
+#   extensions:
+#       dict extended user options to apply common user configurations.
+#     ssh:
+#         dict SSH extended options. User's home, name, and group must be
+#         defined to use these options (above). This will overwrite SSH options
+#         (above) if the same key name is used.
+#       key_name: str - key filename
+#         Default: 'id_rsa'
+#       public_key: str - public SSH key (~/.ssh/{key_name})
+#       private_key: str - private SSH key (~/.ssh/{key_name}.pub)
+#       authorized_keys: str - SSH authorized keys (~/.ssh/authorized_keys)
+#       config: str - formatted SSH config file options (~/.ssh/config)
+#     sudoers:
+#         dict sudo definition from ansible.builtin.sudoers. Use {LABEL} to
+#         reference the group definition in applying users/groups.
+#       commands: list of str - commands allowed by the sudoers rule
+#           Special Case: use 'ALL' for all commands.
+#           Default: omit ([]).
+#       group: str - group name of sudoers rule
+#           Default: omit ('').
+#       host: str - host the rule is for.
+#           Default: 'ALL'.
+#       name: str - filename of the sudoers rule
+#       noexec: bool - True if command is prevented to run further commands
+#           Default: False.
+#       nopassword: bool - True if no password required to run command
+#           Default: True.
+#       runas: str - target user the command(s) will run as
+#           Default: omit (system default).
+#       setenv: bool - True to keep environment when command is run
+#           Default: False.
+#       state: str - state
+#           Default: 'present'.
+#       sudoers_path: str - path which sudoers config files will be managed in
+#           Default: '/etc/sudoers.d'.
+#       user: str - user name for sudoers rule
+#           Default: omit (system default).
+#       validation: str - validate sudoers file on changes
+#           Values:
+#             absent: sudoers rule will be added without validation
+#             detect: sudoers rule will be validated by visudo (if available)
+#             required: visudo must be available to validate the sudoers rule
+#           Default: 'detect'.
+#     gpg:
+#         dict GPG key configuration.
+#       config: str - gpg.conf settings
+#           Default: '' (empty config).
+#       gpg_keys:
+#         - note: str - plain text context note for key
+#           fingerprint: str - key fingerprint (no spaces)
+#           public_key: str - public key. This may be either the PGP block
+#               (starting with -----BEGIN ...) or filepath containing the key.
+#           private_key: str - private key. This may be either the PGP block
+#               (starting with -----BEGIN ...) or filepath containing the key.
+#           password: str - private key password
+#           trust: int - custom trust level (1-5) for imported key
+#               Values automatically adjusted for export/import values (+1).
+#               Do **NOT** blindly copy values from --export-ownertrust.
+#               See tasks/gnupg.yml for more details.
+#             Values:
+#               1 (export/import: 2): I don't know or won't say
+#               2 (export/import: 3): I do NOT trust
+#               3 (export/import: 4): I trust marginally
+#               4 (export/import: 5): I trust fully
+#               5 (export/import: 6): I trust ultimately
+#     copy_data: str - location of files to copy to user home
+#         Use repo path such as 'group_vars/all/users/{USER}/data'.
+#         Default: '' (disabled).
+#     lockdown: bool - True to recursively set 'go-rwx' home permissons
+#         Ownership forced to username. Applied last.
+#         Default: False.
+#     include_group: bool - True define primary group with users_group_{LABEL}
+#         Includes the group task automatically to create the group before
+#         creating the user based on the user name; the primary user group
+#         still needs to be defined. This prevents the need to specify both
+#         groups and user users_accounts_* variables.
+#         Default: False.
+#
+# users_user_exampleuser:
+#   name: 'exampleuser'
+#   group: 'exampleuser'
+#   groups:
+#     - 'ssh'
+#   uid: 701
+#   home: '/etc/ca'
+#   shell: '/bin/bash'
+#   create_home: true
+#   password: '{{ vault_example_user_password }}'
+#   password_lock: true
+#   update_password: 'always'
+#   expires: -1
+#   system: true
+#   state: 'present'
+#   extensions:
+#     ssh:
+#       key_name: 'id_ed25519'
+#       public_key: '{{ vault_exampleuser_public_key }}'
+#       private_key: '{{ vault_exampleuser_private_key }}'
+#       authorized_keys: '{{ vault_exampleuser_authorized_keys }}'
+#       config: |
+#         # auto-accept new host keys
+#         Host *
+#           StrictHostKeyChecking accept-new
+#     sudoers:
+#       commands: 'ALL'
+#       name: 'example'
+#       nopassword: true
+#       state: 'present'
+#       user: 'exampleuser'
+#       validation: 'detect'
+#       copy_data: 'group_vars/all/users/exampleuser/data'
+#       lockdown: true
+#       include_group: true
+#     gpg:
+#       config: |
+#         personal-cipher-preferences AES256 AES192 AES
+#         personal-digest-preferences SHA512 SHA384 SHA256
+#         personal-compress-preferences ZLIB BZIP2 ZIP Uncompressed
+#       gpg_keys:
+#         - note: 'Example key'
+#           fingerprint: 'ACDE ...'
+#           trust: 5
+#           password: '{{ vault_key_password }}'
+#           public_key: 'group_vars/all/users/exampleuser/pub.key'
+#           private_key: '{{ vault_private_key }}'
+#     copy_data: 'group_vars/all/users/exampleuser/data'
+#     lockdown: true
+#     include_group: true
+#
+# Reference:
+# * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
+# * https://docs.ansible.com/ansible/latest/collections/community/general/sudoers_module.html
+# * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+# * https://superuser.com/questions/1125123/how-to-list-trust-level-of-openpgp-public-keys-in-gnupg
+
+###############################################################################
+# Users Configuration
+###############################################################################
+# User accounts are automatically detected based on the users_user_ prefix
+# and are created after groups users_group_ definitions.
+#
+# Accounts are applied in the order:
+#
+#   remove: users -> groups
+#   add: groups -> users
+
+# Group to add during host configuration.
+# List of group names to add to system (from users_group_{LABEL}).
+#
+# users_accounts_groups:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# Default: [].
+users_accounts_groups: []
+
+# Groups to remove during host configuration.
+# List of group names to add to system (from users_group_{LABEL}).
+#
+# users_accounts_groups_absent:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# Default: [].
+users_accounts_groups_absent: []
+
+# Users to add during host configuration.
+# List of user names to add to system (from users_user_{LABEL}).
+#
+# users_accounts_users:
+#   - 'exampleuser'
+#
+# Default: [].
+users_accounts_users: []
+
+# User to remove during host configuration.
+# List of user names to add to system (from users_user_{LABEL}).
+# Files are explicitly kept to prevent unexpected data loss from files owned by
+# that user being deleted when the account is removed.
+#
+# users_accounts_users_absent:
+#   - 'exampleuser'
+#
+# Default: [].
+users_accounts_users_absent: []

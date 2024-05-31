@@ -1,0 +1,134 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# GnuPG Import Keys
+###############################################################################
+# Imports GPG key to a specified user account.
+#
+# Pre-existing keys are detected using real name and email. Trust level is set
+# when importing the key.
+#
+# 'gpg --export-ownertrust' always exports/imports trust with the set level +1.
+# Trust config should use the explicit trust value as it is adjusted in the
+# role automatically.
+#
+#   1 = I don't know or won't say
+#   2 = I do NOT trust
+#   3 = I trust marginally
+#   4 = I trust fully
+#   5 = I trust ultimately
+#
+# gpg:
+#     dict GPG key configuration.
+#   config: str - gpg.conf settings
+#       Default: '' (empty config).
+#   gpg_keys:
+#     note: str - plain text context note for key
+#     fingerprint: str - key fingerprint (no spaces)
+#     public_key: str - public key. This may be either the PGP block
+#         (starting with -----BEGIN ...) or a filepath containing the key.
+#     private_key: str - private key. This may be either the PGP block
+#         (starting with -----BEGIN ...) or a filepath containing the key.
+#     password: str - private key password
+#     trust: int - custom trust level (1-5) for imported key
+#         Values are automatically adjusted for export/import values (+1).
+#         Do **NOT** blindly copy values from --export-ownertrust.
+#         See tasks/gnupg.yml for more details.
+#       Values:
+#         1 (export/import: 2): I don't know or won't say
+#         2 (export/import: 3): I do NOT trust
+#         3 (export/import: 4): I trust marginally
+#         4 (export/import: 5): I trust fully
+#         5 (export/import: 6): I trust ultimately
+#
+# Args:
+#   _users: dict - user with 'gpg' key set.
+#   key: dict - information on one gpg keypair per _user.gpg.gpg_keys.
+#
+# Reference:
+# * https://security.stackexchange.com/questions/129474/how-to-raise-a-key-to-ultimate-trust-on-another-machine
+# * https://blog.tersmitten.nl/how-to-ultimately-trust-a-public-key-non-interactively.html
+# * https://docs.ansible.com/ansible/latest/user_guide/become.html#risks-of-becoming-an-unprivileged-user
+
+# --export-ownertrust will show all current keys, fingerprints, trust levels.
+- name: 'Gnupg import | verify key not installed'
+  ansible.builtin.command: 'gpg --export-ownertrust'
+  changed_when: false
+  become: true
+  become_user: '{{ _users.name }}'
+  register: _users_gpg_key_list
+
+- name: 'Gnupg import | importing key'
+  when: >
+    _users_gpg_key_list is defined and
+    not key.fingerprint in _users_gpg_key_list
+  block:
+    - name: 'Gnupg import | write public key {{ key.fingerprint }}'
+      ansible.builtin.copy:
+        dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
+        owner: '{{ _users.name }}'
+        group: '{{ _users.name }}'
+        mode: '0400'
+        content: '{{ key.public_key }}'
+      when: key.public_key.startswith("-")
+
+    - name: 'Gnupg import | write public key {{ key.fingerprint }}'
+      ansible.builtin.copy:
+        src: '{{ key.public_key }}'
+        dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
+        owner: '{{ _users.name }}'
+        group: '{{ _users.name }}'
+        mode: '0400'
+      when: not key.public_key.startswith("-")
+
+    - name: 'Gnupg import | write private key {{ key.fingerprint }}'
+      ansible.builtin.copy:
+        dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
+        owner: '{{ _users.name }}'
+        group: '{{ _users.name }}'
+        mode: '0400'
+        content: '{{ key.private_key }}'
+      when: key.private_key is defined and key.private_key.startswith("-")
+
+    - name: 'Gnupg import | write private key {{ key.fingerprint }}'
+      ansible.builtin.copy:
+        src: '{{ key.private_key }}'
+        dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
+        owner: '{{ _users.name }}'
+        group: '{{ _users.name }}'
+        mode: '0400'
+      when: key.private_key is defined and not key.private_key.startswith("-")
+
+    - name: 'Gnupg import | public key {{ key.fingerprint }}'
+      ansible.builtin.command: 'gpg --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
+      register: _users_gpg_public_import
+      changed_when: _users_gpg_public_import.rc == 0
+      failed_when: _users_gpg_public_import.rc > 1
+      become: true
+      become_user: '{{ _users.name }}'
+
+    - name: 'Gnupg import | private key {{ key.fingerprint }}'
+      ansible.builtin.command: 'gpg --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
+      register: _users_gpg_private_import
+      changed_when: _users_gpg_public_import.rc == 0
+      failed_when: _users_gpg_private_import.rc > 1
+      become: true
+      become_user: '{{ _users.name }}'
+      when: key.private_key is defined and not key.password is defined
+
+    - name: 'Gnupg import | private key (with password) {{ key.fingerprint }}'
+      ansible.builtin.command: 'gpg --passphrase {{ key.password }} --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
+      register: _users_gpg_private_import
+      changed_when: _users_gpg_public_import.rc == 0
+      failed_when: _users_gpg_private_import.rc > 1
+      become: true
+      become_user: '{{ _users.name }}'
+      when: key.private_key is defined and key.password is defined
+
+    - name: 'Gnupg import | cleanup'
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: 'absent'
+      loop:
+        - '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
+        - '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'

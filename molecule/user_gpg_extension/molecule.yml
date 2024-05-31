@@ -1,0 +1,86 @@
+---
+# yamllint disable rule:line-length
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        users_group_user_valid_gpg_keys:
+          name: 'user_valid_gpg_keys'
+          gid: 800
+        users_user_user_valid_gpg_keys:
+          name: 'user_valid_gpg_keys'
+          group: 'user_valid_gpg_keys'
+          home: '/home/user_valid_gpg_keys'
+          uid: 800
+          extensions:
+            include_group: true
+            gpg:
+              config: |
+                personal-cipher-preferences AES256 AES192 AES
+                personal-digest-preferences SHA512 SHA384 SHA256
+                personal-compress-preferences ZLIB BZIP2 ZIP Uncompressed
+              gpg_keys:
+                - note: 'publically exposed example keys. OK for plaintext.'
+                  fingerprint: 'EB85BB5FA33A75E15E944E63F231550C4F47E38E'
+                  public_key: |
+                    -----BEGIN PGP PUBLIC KEY BLOCK-----
+                    Comment: Alice's OpenPGP certificate
+                    Comment: https://www.ietf.org/id/draft-bre-openpgp-samples-01.html
+
+                    mDMEXEcE6RYJKwYBBAHaRw8BAQdArjWwk3FAqyiFbFBKT4TzXcVBqPTB3gmzlC/U
+                    b7O1u120JkFsaWNlIExvdmVsYWNlIDxhbGljZUBvcGVucGdwLmV4YW1wbGU+iJAE
+                    ExYIADgCGwMFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQTrhbtfozp14V6UTmPy
+                    MVUMT0fjjgUCXaWfOgAKCRDyMVUMT0fjjukrAPoDnHBSogOmsHOsd9qGsiZpgRnO
+                    dypvbm+QtXZqth9rvwD9HcDC0tC+PHAsO7OTh1S1TC9RiJsvawAfCPaQZoed8gK4
+                    OARcRwTpEgorBgEEAZdVAQUBAQdAQv8GIa2rSTzgqbXCpDDYMiKRVitCsy203x3s
+                    E9+eviIDAQgHiHgEGBYIACAWIQTrhbtfozp14V6UTmPyMVUMT0fjjgUCXEcE6QIb
+                    DAAKCRDyMVUMT0fjjlnQAQDFHUs6TIcxrNTtEZFjUFm1M0PJ1Dng/cDW4xN80fsn
+                    0QEA22Kr7VkCjeAEC08VSTeV+QFsmz55/lntWkwYWhmvOgE=
+                    =iIGO
+                    -----END PGP PUBLIC KEY BLOCK-----
+                  private_key: |
+                    -----BEGIN PGP PRIVATE KEY BLOCK-----
+                    Comment: Alice's OpenPGP Transferable Secret Key
+                    Comment: https://www.ietf.org/id/draft-bre-openpgp-samples-01.html
+
+                    lFgEXEcE6RYJKwYBBAHaRw8BAQdArjWwk3FAqyiFbFBKT4TzXcVBqPTB3gmzlC/U
+                    b7O1u10AAP9XBeW6lzGOLx7zHH9AsUDUTb2pggYGMzd0P3ulJ2AfvQ4RtCZBbGlj
+                    ZSBMb3ZlbGFjZSA8YWxpY2VAb3BlbnBncC5leGFtcGxlPoiQBBMWCAA4AhsDBQsJ
+                    CAcCBhUKCQgLAgQWAgMBAh4BAheAFiEE64W7X6M6deFelE5j8jFVDE9H444FAl2l
+                    nzoACgkQ8jFVDE9H447pKwD6A5xwUqIDprBzrHfahrImaYEZzncqb25vkLV2arYf
+                    a78A/R3AwtLQvjxwLDuzk4dUtUwvUYibL2sAHwj2kGaHnfICnF0EXEcE6RIKKwYB
+                    BAGXVQEFAQEHQEL/BiGtq0k84Km1wqQw2DIikVYrQrMttN8d7BPfnr4iAwEIBwAA
+                    /3/xFPG6U17rhTuq+07gmEvaFYKfxRB6sgAYiW6TMTpQEK6IeAQYFggAIBYhBOuF
+                    u1+jOnXhXpROY/IxVQxPR+OOBQJcRwTpAhsMAAoJEPIxVQxPR+OOWdABAMUdSzpM
+                    hzGs1O0RkWNQWbUzQ8nUOeD9wNbjE3zR+yfRAQDbYqvtWQKN4AQLTxVJN5X5AWyb
+                    Pnn+We1aTBhaGa86AQ==
+                    =n8OM
+                    -----END PGP PRIVATE KEY BLOCK-----
+                  trust: 1
+platforms:
+  - name: 'debian-12'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    capabilities:
+      - 'SYS_ADMIN'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .

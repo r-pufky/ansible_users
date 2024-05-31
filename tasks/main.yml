@@ -1,0 +1,28 @@
+---
+- name: 'Main | remove groups'
+  ansible.builtin.group:
+    name: '{{ item }}'
+    state: 'absent'
+  loop: '{{ users_accounts_groups_absent | default([]) }}'
+
+- name: 'Main | remove users'
+  ansible.builtin.user:
+    name: '{{ item }}'
+    force: false
+    remove: false
+    state: 'absent'
+  loop: '{{ users_accounts_users_absent | default([]) }}'
+
+- name: 'Main | manage groups'
+  ansible.builtin.include_tasks: 'group.yml'
+  loop: '{{ users_accounts_groups | default([]) }}'
+  loop_control:
+    loop_var: group
+  no_log: true  # passwords
+
+- name: 'Main | manage users'
+  ansible.builtin.include_tasks: 'user.yml'
+  loop: '{{ users_accounts_users | default([]) }}'
+  loop_control:
+    loop_var: user
+  no_log: true  # passwords, gpg keys, ssh keys

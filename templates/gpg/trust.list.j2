@@ -1,0 +1,13 @@
+# List of assigned trustvalues
+# (Use "gpg --import-ownertrust" to restore them)
+{#
+We use real trust numbers; export/import uses those numbers +1.
+Reference:
+* https://superuser.com/questions/1125123/how-to-list-trust-level-of-openpgp-public-keys-in-gnupg
+* https://security.stackexchange.com/questions/129474/how-to-raise-a-key-to-ultimate-trust-on-another-machine
+#}
+{% for key in _users.extensions.gpg.gpg_keys %}
+{% if key.trust is defined %}
+{{ key.fingerprint }}:{{ key.trust + 1 }}:
+{% endif %}
+{% endfor %}

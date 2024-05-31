@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 dependency:
   name: 'galaxy'
 driver:
@@ -11,18 +12,98 @@ provisioner:
       callback_whitelist: 'profile_tasks, timer, yaml'
     ssh_connection:
       pipelining: false
+  inventory:
+    group_vars:
+      all:
+        users_group_minimum_group:
+          name: 'minimum_group_options'
+          gid: 800
+        users_user_minimum_user:
+          name: 'minimum_user_options'
+          uid: 810
+        users_group_group_all_options:
+          name: 'group_all_options'
+          force: true
+          gid: 820
+          local: false
+          non_unique: false
+          system: true
+        users_group_explicit_user_group:
+          name: 'explicit_user_group'
+          gid: 830
+        users_user_explicit_user_group:
+          name: 'explicit_user_group'
+          uid: 830
+          group: 'explicit_user_group'
+          extensions:
+            include_group: true
+        users_group_user_all_options:
+          name: 'user_all_options'
+          gid: 840
+        users_user_user_all_options:
+          name: 'user_all_options'
+          append: true
+          authorization: ''
+          comment: 'User with all debian options specified'
+          create_home: true
+          expires: -1
+          force: true
+          generate_ssh_key: false
+          group: 'user_all_options'
+          groups:
+            - 'floppy'
+            - 'cdrom'
+          hidden: false
+          home: '/home/user_all_options'
+          local: false
+          login_class: ''
+          move_home: false
+          non_unique: false
+          password: '*'
+          password_expire_max: 100
+          password_expire_min: 90
+          password_expire_warn: 14
+          password_lock: false
+          profile: ''
+          remove: true
+          role: ''
+          shell: '/bin/bash'
+          skeleton: '/etc/skel'
+          ssh_key_bits: 1024
+          ssh_key_comment: 'test ssh key'
+          ssh_key_file: '.ssh/id_rsa'
+          ssh_key_passphrase: ''
+          ssh_key_type: 'rsa'
+          system: true
+          uid: 840
+          umask: '022'
+          update_password: 'always'
+        users_group_user_lockdown:
+          name: 'user_lockdown'
+          gid: 850
+        users_user_user_lockdown:
+          name: 'user_lockdown'
+          home: '/home/user_lockdown'
+          extensions:
+            lockdown: true
+        users_group_user_group:
+          name: 'user_group'
+          gid: 860
+        users_user_user_group:
+          name: 'user_group'
+          group: 'user_group'
+          uid: 860
+          extensions:
+            include_group: true
+        users_user_user_group_alt_profile:
+          name: 'user_group'
+          group: 'user_group'
+          uid: 860
+          extensions:
+            include_group: true
 platforms:
   - name: 'debian-12'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-  - name: 'debian-11'
-    image: 'ghcr.io/hifis-net/debian-systemd:11'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

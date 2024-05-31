@@ -1,0 +1,107 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Manage User GnuPG
+###############################################################################
+# Configure GPG keys for given user account. Assumes GPG keys have been
+# pre-generated for deployment. Pre-existing keys are detected using all
+# available real name and email data. Trust level is set when importing the
+# key.
+#
+# Manually generate key by setting gpg.conf preferences and:
+#
+#   gpg --full-gen-key --expert
+#   gpg --list-keys --keyid-format LONG
+#   gpg --export --armor --output public.key.asc {KEYID}
+#   gpg --list-secret-keys --keyid-format LONG
+#   gpg --export-secret-keys --armor --output private.key.asc {KEYID}
+#
+# Current trust levels may be exported for configuration:
+#
+#   gpg --export-ownertrust
+#
+# Exported trust levels will be trust level +1 (e.g. 5 -> 6, etc.). Be **sure**
+# to adjust these when setting key options.
+#
+#   1 = I don't know or won't say
+#   2 = I do NOT trust
+#   3 = I trust marginally
+#   4 = I trust fully
+#   5 = I trust ultimately
+#
+# If you configure multiple secret keys, be sure to set 'default-key' in
+# gpg.conf.
+#
+# Args:
+#   _users: dict - user with 'gpg' key set.
+#
+# Reference:
+# * https://www.gnupg.org/documentation/manuals/gnupg/GPG-Configuration.html
+# * https://github.com/drduh/config/blob/master/gpg.conf
+# * https://wiki.archlinux.org/title/GnuPG
+# * https://www.gnupg.org/documentation/manuals/gnupg/GPG-Esoteric-Options.html
+
+- name: 'Gnupg | install dependencies'
+  ansible.builtin.apt:
+    name: '{{ users_default_packages }}'
+    state: '{{ users_package_state }}'
+
+- name: 'Gnupg | install container dependencies'
+  ansible.builtin.apt:
+    name: '{{ users_container_gnupg_packages }}'
+    state: '{{ users_package_state }}'
+  when: ansible_virtualization_role == 'guest'
+
+- name: 'Gnupg | install VM dependencies'
+  ansible.builtin.apt:
+    name: '{{ users_vm_gnupg_packages }}'
+    state: '{{ users_package_state }}'
+  when: ansible_virtualization_role == 'host'
+
+- name: 'Gnupg | create {{ _users.home }}/.gnupg'  # noqa name[template] directory structure
+  ansible.builtin.file:
+    dest: '{{ _users.home }}/.gnupg'
+    owner: '{{ _users.name }}'
+    group: '{{ _users.name }}'
+    mode: '0700'
+    state: 'directory'
+
+- name: 'Gnupg | set GPG config options'
+  ansible.builtin.template:
+    src: 'gpg/gpg.conf.j2'
+    dest: '{{ _users.home }}/.gnupg/gpg.conf'
+    owner: '{{ _users.name }}'
+    group: '{{ _users.name }}'
+    mode: '0600'
+
+- name: 'Gnupg | warm up GPG DB cache'
+  ansible.builtin.command: 'gpg --list-keys'
+  changed_when: false
+  become: true
+  become_user: '{{ _users.name }}'
+
+- name: 'Gnupg | cache key trust'
+  ansible.builtin.template:
+    src: 'gpg/trust.list.j2'
+    dest: '{{ _users.home }}/.gnupg/trust.list'
+    owner: '{{ _users.name }}'
+    group: '{{ _users.name }}'
+    mode: '0400'
+
+- name: 'Gnupg | import GPG keys'
+  ansible.builtin.include_tasks: 'gnupg_import.yml'
+  loop: '{{ _users.extensions.gpg.gpg_keys }}'
+  loop_control:
+    loop_var: key
+  no_log: true  # private keys
+
+- name: 'Gnupg | set key trust'
+  ansible.builtin.command: 'gpg --import-ownertrust {{ _users.home }}/.gnupg/trust.list'
+  changed_when: false
+  become: true
+  become_user: '{{ _users.name }}'
+
+- name: 'Gnupg | cleanup trust cache'
+  ansible.builtin.file:
+    path: '{{ _users.home }}/.gnupg/trust.list'
+    state: 'absent'

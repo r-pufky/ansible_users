@@ -1,4 +1,6 @@
 ---
-collections: []
+collections:
+  # https://docs.ansible.com/ansible/latest/collections/community/general/sudoers_module.html
+  - community.general.sudoers
 
 roles: []

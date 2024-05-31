@@ -1,0 +1,33 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Manage Groups
+###############################################################################
+# Creates a group based on the users_group_{LABEL} variable from host inventory.
+# See default/main.yml for group variable details.
+#
+# Using default(omit) will pass a null value to task, ensuring that specific
+# option is disabled when executed.
+#
+# Args:
+#   group: str - group to manage.
+#
+# Reference:
+# * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
+# * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#dynamic-variables
+# * https://github.com/ansible/ansible/issues/44261
+
+- name: 'Group | detect group attributes {{ group }}'
+  ansible.builtin.set_fact:
+    _users_group: '{{ hostvars[inventory_hostname]["users_group_" ~ group] | default({}) }}'
+
+- name: 'Group | create group {{ _users_group.name }}'
+  ansible.builtin.group:
+    force: '{{ _users_group.force | default(false) }}'
+    gid: '{{ _users_group.gid | default(omit) }}'
+    local: '{{ _users_group.local | default(false) }}'
+    name: '{{ _users_group.name }}'
+    non_unique: '{{ _users_group.non_unique | default(false) }}'
+    state: 'present'
+    system: '{{ _users_group.system | default(false) }}'
+  when: _users_group is defined and _users_group | length > 0

@@ -1,0 +1,79 @@
+---
+# yamllint disable rule:line-length
+dependency:
+  name: 'galaxy'
+driver:
+  name: 'podman'
+provisioner:
+  name: 'ansible'
+  config_options:
+    defaults:
+      interpreter_python: 'auto_silent'
+      callback_whitelist: 'profile_tasks, timer, yaml'
+    ssh_connection:
+      pipelining: false
+  inventory:
+    group_vars:
+      all:
+        users_group_ssh_extension:
+          name: 'ssh_extension'
+          gid: 800
+        users_user_ssh_extension:
+          name: 'ssh_extension'
+          group: 'ssh_extension'
+          home: '/home/ssh_extension'
+          uid: 800
+          ssh_key_bits: 1024
+          ssh_key_comment: 'test ssh key'
+          ssh_key_file: '.ssh/id_rsa'
+          ssh_key_passphrase: ''
+          ssh_key_type: 'rsa'
+          extensions:
+            include_group: true
+            ssh:
+              key_name: 'id_ed25519'
+              public_key: 'ed25519 test key'
+              private_key: 'ed25519 test key'
+              config: |
+                # auto-accept new host keys
+                Host *
+                  StrictHostKeyChecking accept-new
+        users_group_ssh_extension_conflict:
+          name: 'ssh_extension_conflict'
+          gid: 810
+        users_user_ssh_extension_conflict:
+          name: 'ssh_extension_conflict'
+          group: 'ssh_extension_conflict'
+          home: '/home/ssh_extension_conflict'
+          uid: 810
+          ssh_key_bits: 1024
+          ssh_key_comment: 'test ssh key'
+          ssh_key_file: '.ssh/id_rsa'
+          ssh_key_passphrase: ''
+          ssh_key_type: 'rsa'
+          extensions:
+            include_group: true
+            ssh:
+              key_name: 'id_rsa'
+              public_key: 'id_rsa conflict key overwrites'
+              private_key: 'id_rsa conflict key overwrites'
+              config: |
+                # auto-accept new host keys
+                Host *
+                  StrictHostKeyChecking accept-new
+platforms:
+  - name: 'debian-12'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    capabilities:
+      - 'SYS_ADMIN'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+verifier:
+  name: 'ansible'
+lint: |
+  set -e
+  yamllint .
+  ansible-lint .

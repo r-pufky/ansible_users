@@ -1,0 +1,19 @@
+---
+# Verify copy_data extension works properly.
+- name: 'Default | verify | user copy data'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | user copy data | query copied user data'
+      ansible.builtin.stat:
+        path: '/home/user_copy_data/copy_data/user_files_test'
+      register: _test_users_copy
+
+    - name: 'Default | verify | user copy data | assert copied user data'
+      ansible.builtin.assert:
+        that:
+          - _test_users_copy.stat.exists
+          - _test_users_copy.stat.gr_name == 'user_copy_data'
+          - _test_users_copy.stat.pw_name == 'user_copy_data'
+          - _test_users_copy.stat.mode == '0600'
+        fail_msg: 'user_copy_data user data NOT copied correctly.'

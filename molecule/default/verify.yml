@@ -1,93 +1,184 @@
 ---
 # yamllint disable rule:line-length
 # As these are encapsulated ansible tasks just ensure that sending all options
-# successfully executes, as well as toggling user and group.
-- name: 'Default | verify | extraction successful'
+# successfully executes, as well as toggling user and group options, and
+# minimum configuration (excluding auto UID/GID for idempotent testing).
+- name: 'Default | verify | minimum group specification'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verfiy | query user_all_defaults_valid'
-      ansible.builtin.getent:
-        database: 'passwd'
-        key: 'user_all_defaults_valid'
-
-    - name: 'Default | verify | assert user_all_defaults_valid created'
-      ansible.builtin.assert:
-        that:
-          - '"user_all_defaults_valid" in ansible_facts.getent_passwd'
-          - ansible_facts.getent_passwd.user_all_defaults_valid[1] == '1000'
-          - ansible_facts.getent_passwd.user_all_defaults_valid[2] == '1000'
-          - ansible_facts.getent_passwd.user_all_defaults_valid[4] == '/nonexistent'
-          - ansible_facts.getent_passwd.user_all_defaults_valid[5] == '/usr/sbin/nologin'
-        success_msg: 'user_all_defaults_valid correct.'
-        fail_msg: 'user_all_defaults_valid incorrect passwd values.'
-
-    - name: 'Default | verfiy | query group_all_defaults_valid'
+    - name: 'Default | verify | minimum group specification | query group minimum_group_options'
       ansible.builtin.getent:
         database: 'group'
-        key: 'group_all_defaults_valid'
+        key: 'minimum_group_options'
 
-    - name: 'Default | verify | assert group created'
+    - name: 'Default | verify | minimum group specification | assert group minimum_group_options'
       ansible.builtin.assert:
         that:
-          - '"group_all_defaults_valid" in ansible_facts.getent_group'
-          - ansible_facts.getent_group.group_all_defaults_valid[1] == '1001'
-        success_msg: 'group_all_defaults_valid correct.'
-        fail_msg: 'group_all_defaults_valid incorrect passwd values.'
+          - '"minimum_group_options" in ansible_facts.getent_group'
+          - ansible_facts.getent_group.minimum_group_options[1] == '800'
+        fail_msg: 'minimum_group_options does not exist or not gid=800.'
 
-    - name: 'Default | verfiy | query group_all_specified_values'
-      ansible.builtin.getent:
-        database: 'group'
-        key: 'group_all_specified_values'
-
-    - name: 'Default | verify | assert group created'
-      ansible.builtin.assert:
-        that:
-          - '"group_all_specified_values" in ansible_facts.getent_group'
-          - ansible_facts.getent_group.group_all_specified_values[1] == '1500'
-        success_msg: 'group_all_specified_values correct.'
-        fail_msg: 'group_all_specified_values incorrect passwd values.'
-
-    - name: 'Default | verfiy | query user_all_specified_values'
+- name: 'Default | verify | minimum user specification'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | minimum user specification | query user minimum_user_options'
       ansible.builtin.getent:
         database: 'passwd'
-        key: 'user_all_specified_values'
+        key: 'minimum_user_options'
 
-    - name: 'Default | verify | assert user_all_specified_values created'
+    - name: 'Default | verify | minimum user specification | query user minimum_user_options home directory'
+      ansible.builtin.stat:
+        path: '/home/minimum_user_options'
+      register: _test_users_minimum_user_options_home
+
+    - name: 'Default | verify | minimum user specification | assert user minimum_user_options'
       ansible.builtin.assert:
         that:
-          - '"user_all_specified_values" in ansible_facts.getent_passwd'
-          - ansible_facts.getent_passwd.user_all_specified_values[1] == '1500'
-          - ansible_facts.getent_passwd.user_all_specified_values[2] == '1500'
-          - ansible_facts.getent_passwd.user_all_specified_values[3] == '(logins disabled)'
-          - ansible_facts.getent_passwd.user_all_specified_values[4] == '/etc/test_location'
-          - ansible_facts.getent_passwd.user_all_specified_values[5] == '/bin/bash'
-        success_msg: 'user_all_specified_values correct.'
-        fail_msg: 'user_all_specified_values incorrect passwd values.'
+          - '"minimum_user_options" in ansible_facts.getent_passwd'
+          - ansible_facts.getent_passwd.minimum_user_options[1] == '810'
+          - ansible_facts.getent_passwd.minimum_user_options[4] == '/home/minimum_user_options'
+          - ansible_facts.getent_passwd.minimum_user_options[5] == '/bin/bash'
+          - _test_users_minimum_user_options_home.stat.exists
+        fail_msg: 'minimum_user_options does not exist, not uid=810, or home directory does not exist.'
 
-    - name: 'Default | verfiy | query user_simul_user'
-      ansible.builtin.getent:
-        database: 'passwd'
-        key: 'user_simul_user'
-
-    - name: 'Default | verfiy | query user_simul_group'
+- name: 'Default | verify | all group options specified'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | all group options specified | query group group_all_options'
       ansible.builtin.getent:
         database: 'group'
-        key: 'user_simul_group'
+        key: 'group_all_options'
 
-    - name: 'Default | verify | assert group created'
+    - name: 'Default | verify | all group options specified | assert group group_all_options'
       ansible.builtin.assert:
         that:
-          - '"user_simul_group" in ansible_facts.getent_group'
-          - ansible_facts.getent_group.user_simul_group[1] == '1550'
-        success_msg: 'user_simul_group correct.'
-        fail_msg: 'user_simul_group incorrect passwd values.'
+          - '"group_all_options" in ansible_facts.getent_group'
+          - ansible_facts.getent_group.group_all_options[1] == '820'
+        fail_msg: 'group_all_options does not exist or not gid=820.'
 
-    - name: 'Default | verify | assert user_simul_user created'
+- name: 'Default | verify | user with include_group explicit group'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | user with include_group explicit group | query group explicit_user_group'
+      ansible.builtin.getent:
+        database: 'group'
+        key: 'explicit_user_group'
+
+    - name: 'Default | verify | user with include_group explicit group | query user explicit_user_group'
+      ansible.builtin.getent:
+        database: 'passwd'
+        key: 'explicit_user_group'
+
+    - name: 'Default | verify | user with include_group explicit group | assert group explicit_user_group'
       ansible.builtin.assert:
         that:
-          - '"user_simul_user" in ansible_facts.getent_passwd'
-          - ansible_facts.getent_passwd.user_simul_user[1] == '1550'
-          - ansible_facts.getent_passwd.user_simul_user[2] == '1551'
-        success_msg: 'user_simul_user correct.'
-        fail_msg: 'user_simul_user incorrect passwd values.'
+          - '"explicit_user_group" in ansible_facts.getent_group'
+          - ansible_facts.getent_group.explicit_user_group[1] == '830'
+        fail_msg: 'explicit_user_group does not exist or not gid=830.'
+
+    - name: 'Default | verify | user with include_group explicit group | query user explicit_user_group home directory'
+      ansible.builtin.stat:
+        path: '/home/explicit_user_group'
+      register: _test_users_explicit_user_group_home
+
+    - name: 'Default | verify | user with include_group explicit group | assert user explicit_user_group'
+      ansible.builtin.assert:
+        that:
+          - '"explicit_user_group" in ansible_facts.getent_passwd'
+          - ansible_facts.getent_passwd.explicit_user_group[1] == '830'
+          - ansible_facts.getent_passwd.explicit_user_group[2] == '830'
+          - ansible_facts.getent_passwd.explicit_user_group[4] == '/home/explicit_user_group'
+          - ansible_facts.getent_passwd.explicit_user_group[5] == '/bin/bash'
+          - _test_users_explicit_user_group_home.stat.exists
+        fail_msg: 'explicit_user_group does not exist, not uid=830, or home directory does not exist.'
+
+- name: 'Default | verify | user with all options'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | user with all options | query group user_all_options'
+      ansible.builtin.getent:
+        database: 'group'
+        key: 'user_all_options'
+
+    - name: 'Default | verify | user with all options | query user user_all_options'
+      ansible.builtin.getent:
+        database: 'passwd'
+        key: 'user_all_options'
+
+    - name: 'Default | verify | user with all options | assert group user_all_options'
+      ansible.builtin.assert:
+        that:
+          - '"user_all_options" in ansible_facts.getent_group'
+          - ansible_facts.getent_group.user_all_options[1] == '840'
+        fail_msg: 'user_all_options does not exist or not gid=840.'
+
+    - name: 'Default | verify | user with all options | query user user_all_options home directory'
+      ansible.builtin.stat:
+        path: '/home/user_all_options'
+      register: _test_users_user_all_options_home
+
+    - name: 'Default | verify | user with all options | assert user user_all_options'
+      ansible.builtin.assert:
+        that:
+          - '"user_all_options" in ansible_facts.getent_passwd'
+          - ansible_facts.getent_passwd.user_all_options[1] == '840'
+          - ansible_facts.getent_passwd.user_all_options[2] == '840'
+          - ansible_facts.getent_passwd.user_all_options[4] == '/home/user_all_options'
+          - ansible_facts.getent_passwd.user_all_options[5] == '/bin/bash'
+          - _test_users_user_all_options_home.stat.exists
+        fail_msg: 'user_all_options does not exist, not uid=830, or home directory does not exist.'
+
+- name: 'Default | verify | user lockdown'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | user lockdown | query user_lockdown home directory'
+      ansible.builtin.stat:
+        path: '/home/user_lockdown'
+      register: _test_users_user_lockdown_home
+
+    - name: 'Default | verify | user lockdown | query user_lockdown .profile'
+      ansible.builtin.stat:
+        path: '/home/user_lockdown/.profile'
+      register: _test_users_user_lockdown_profile
+
+    - name: 'Default | verify | user lockdown | assert user user_lockdown'
+      ansible.builtin.assert:
+        that:
+          - _test_users_user_lockdown_home.stat.mode == '0700'
+          - _test_users_user_lockdown_home.stat.pw_name == 'user_lockdown'
+          - _test_users_user_lockdown_home.stat.gr_name == 'user_lockdown'
+          - _test_users_user_lockdown_profile.stat.mode == '0600'
+          - _test_users_user_lockdown_profile.stat.pw_name == 'user_lockdown'
+          - _test_users_user_lockdown_profile.stat.gr_name == 'user_lockdown'
+        fail_msg: 'user_all_options does not exist, not uid=830, or home directory does not exist.'
+
+- name: 'Default | verify | alt user settings (same user with different settings)'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | alt user settings (same user with different settings) | query user minimum_user_options'
+      ansible.builtin.getent:
+        database: 'passwd'
+        key: 'user_group'
+
+    - name: 'Default | verify | alt user settings (same user with different settings) | query user minimum_user_options home directory'
+      ansible.builtin.stat:
+        path: '/home/user_group'
+      register: _test_users_user_group_home
+
+    - name: 'Default | verify | alt user settings (same user with different settings) | assert user minimum_user_options'
+      ansible.builtin.assert:
+        that:
+          - '"user_group" in ansible_facts.getent_passwd'
+          - ansible_facts.getent_passwd.user_group[1] == '860'
+          - ansible_facts.getent_passwd.user_group[2] == '860'
+          - ansible_facts.getent_passwd.user_group[4] == '/home/user_group'
+          - ansible_facts.getent_passwd.user_group[5] == '/bin/bash'
+          - _test_users_user_group_home.stat.exists
+        fail_msg: 'user_group does not exist, not uid=810, or home directory does not exist.'

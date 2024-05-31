@@ -1,0 +1,17 @@
+---
+# yamllint disable rule:line-length
+# Verify sudoers extenions works properly.
+- name: 'Default | verify | sudoers config'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | sudoers config | query sudoers config'
+      ansible.builtin.slurp:
+        path: '/etc/sudoers.d/sudoers_extension'
+      register: _test_users_sudoers_extension
+
+    - name: 'Default | verify | sudoers config | assert sudoers configuration correct'
+      ansible.builtin.assert:
+        that:
+          - _test_users_sudoers_extension.content | b64decode == '%sudo ALL=(root)NOEXEC:SETENV: ALL'
+        fail_msg: 'sudoers_extension sudoers invalid (expected %sudo ALL=(root)NOEXEC:SETENV: ALL).'

@@ -13,13 +13,5 @@
       ansible.builtin.include_role:
         name: 'users'
       vars:
-        users_accounts_groups:
-          - 'minimum_group'
-          - 'group_all_options'
-          - 'user_all_options'
         users_accounts_users:
-          - 'minimum_user'
-          - 'explicit_user_group'
-          - 'user_all_options'
-          - 'user_lockdown'
-          - 'user_group_alt_profile'
+          - 'user_valid_gpg_keys'

@@ -1,6 +1,35 @@
 ---
 # yamllint disable rule:line-length
 ###############################################################################
+# Default User Dependencies
+###############################################################################
+#
+# Reference:
+# * https://docs.ansible.com/ansible/latest/user_guide/become.html#risks-of-becoming-an-unprivileged-user
+
+users_default_packages:
+  - 'gnupg2'
+  - 'acl'  # unprivileged user GPG (gnupg2) setup
+
+# Packages to apply to ALL containers.
+# containers are detected via ansible_virtualization_role.
+#
+# Default: See below.
+users_container_gnupg_packages:
+  - 'rng-tools5'  # https://packages.debian.org/bookworm/rng-tools5
+  - 'haveged'  # https://packages.debian.org/bookworm/haveged
+
+# Packages to apply to ALL virtual machines.
+# Virtual machines are detected via ansible_virtualization_role.
+#
+# Default: See below.
+users_vm_gnupg_packages:
+  - 'haveged'  # https://packages.debian.org/bookworm/haveged
+
+# Default state for package installation. See ansible.builtin.apt.
+users_package_state: 'latest'
+
+###############################################################################
 # Password Hash Defaults
 ###############################################################################
 # Defaults for each algorithm for hashing passwords.
