@@ -11,7 +11,7 @@
   tasks:
     - name: 'Default | converge | create test users and groups'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
       vars:
         users_accounts_groups:
           - 'minimum_group'

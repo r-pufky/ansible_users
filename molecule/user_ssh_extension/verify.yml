@@ -1,26 +1,26 @@
 ---
 # yamllint disable rule:line-length
 # Verify SSH extension works properly.
-- name: 'Default | verify | SSH extension no conflicts'
+- name: 'User SSH extension | verify | SSH extension no conflicts'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | SSH extension no conflicts | query ssh private key'
+    - name: 'User SSH extension | verify | SSH extension no conflicts | query ssh private key'
       ansible.builtin.stat:
         path: '/home/ssh_extension/.ssh/id_ed25519'
       register: _test_users_ssh_private
 
-    - name: 'Default | verify | SSH extension no conflicts | query ssh public key'
+    - name: 'User SSH extension | verify | SSH extension no conflicts | query ssh public key'
       ansible.builtin.stat:
         path: '/home/ssh_extension/.ssh/id_ed25519.pub'
       register: _test_users_ssh_public
 
-    - name: 'Default | verify | SSH extension no conflicts | query ssh config'
+    - name: 'User SSH extension | verify | SSH extension no conflicts | query ssh config'
       ansible.builtin.stat:
         path: '/home/ssh_extension/.ssh/config'
       register: _test_users_ssh_config
 
-    - name: 'Default | verify | SSH extension no conflicts | assert extended ssh configuration correct'
+    - name: 'User SSH extension | verify | SSH extension no conflicts | assert extended ssh configuration correct'
       ansible.builtin.assert:
         that:
           - _test_users_ssh_private.stat.exists
@@ -28,26 +28,26 @@
           - _test_users_ssh_config.stat.exists
         fail_msg: 'ssh_extension extended SSH NOT created (expected .ssh/id_ed25519*, config).'
 
-- name: 'Default | verify | SSH extension conflicts (SSH extension overwrites)'
+- name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites)'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | SSH extension conflicts (SSH extension overwrites) | query ssh private key'
+    - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites) | query ssh private key'
       ansible.builtin.slurp:
         path: '/home/ssh_extension_conflict/.ssh/id_rsa'
       register: _test_users_ssh_private
 
-    - name: 'Default | verify | SSH extension conflicts (SSH extension overwrites) | query ssh public key'
+    - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites) | query ssh public key'
       ansible.builtin.slurp:
         path: '/home/ssh_extension_conflict/.ssh/id_rsa.pub'
       register: _test_users_ssh_public
 
-    - name: 'Default | verify | SSH extension conflicts (SSH extension overwrites) | query ssh config'
+    - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites) | query ssh config'
       ansible.builtin.stat:
         path: '/home/ssh_extension_conflict/.ssh/config'
       register: _test_users_ssh_config
 
-    - name: 'Default | verify | SSH extension conflicts (SSH extension overwrites) | assert extended ssh configuration correct'
+    - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites) | assert extended ssh configuration correct'
       ansible.builtin.assert:
         that:
           - _test_users_ssh_private.content | b64decode == 'id_rsa conflict key overwrites'

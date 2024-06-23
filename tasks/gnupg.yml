@@ -43,19 +43,19 @@
 
 - name: 'Gnupg | install dependencies'
   ansible.builtin.apt:
-    name: '{{ users_default_packages }}'
-    state: '{{ users_package_state }}'
+    name: '{{ users_role_packages }}'
+    state: '{{ users_role_package_state }}'
 
 - name: 'Gnupg | install container dependencies'
   ansible.builtin.apt:
-    name: '{{ users_container_gnupg_packages }}'
-    state: '{{ users_package_state }}'
+    name: '{{ users_role_container_gnupg_packages }}'
+    state: '{{ users_role_package_state }}'
   when: ansible_virtualization_role == 'guest'
 
 - name: 'Gnupg | install VM dependencies'
   ansible.builtin.apt:
-    name: '{{ users_vm_gnupg_packages }}'
-    state: '{{ users_package_state }}'
+    name: '{{ users_role_vm_gnupg_packages }}'
+    state: '{{ users_role_package_state }}'
   when: ansible_virtualization_role == 'host'
 
 - name: 'Gnupg | create {{ _users.home }}/.gnupg'  # noqa name[template] directory structure

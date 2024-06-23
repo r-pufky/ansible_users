@@ -4,14 +4,14 @@
 # Reference:
 # * https://github.com/ansible/molecule/issues/816
 
-- name: 'Default | converge'
+- name: 'User sudoers extension | converge'
   hosts: all
   gather_facts: true
   tags: 'molecule-idempotence-notest'
   tasks:
-    - name: 'Default | converge | create test users and groups'
+    - name: 'User sudoers extension | converge | create test users and groups'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
       vars:
         users_accounts_users:
           - 'sudoers_extension'

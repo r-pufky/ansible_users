@@ -1,28 +1,28 @@
 ---
 # yamllint disable rule:line-length
 # Verify GPG extension works properly.
-- name: 'Default | verify | gpg extension'
+- name: 'User GPG extension | verify | gpg extension'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | query gpg config'
+    - name: 'User GPG extension | verify | query gpg config'
       ansible.builtin.stat:
         path: '/home/user_valid_gpg_keys/.gnupg/gpg.conf'
       register: _test_users_gpg_config
 
-    - name: 'Default | verify | assert gpg config exists'
+    - name: 'User GPG extension | verify | assert gpg config exists'
       ansible.builtin.assert:
         that: _test_users_gpg_config.stat.exists
         fail_msg: 'user_valid_gpg_keys gpg config does NOT exist (it should).'
 
-    - name: 'Default | verify | query imported key trust'
+    - name: 'User GPG extension | verify | query imported key trust'
       ansible.builtin.command: 'gpg --export-ownertrust'
       changed_when: false
       become: true
       become_user: 'user_valid_gpg_keys'
       register: _test_users_gpg_key_list
 
-    - name: 'Default | verify | assert import trust correct'
+    - name: 'User GPG extension | verify | assert import trust correct'
       ansible.builtin.assert:
         that: (_test_users_gpg_key_list.stdout_lines | last | split(":"))[1] == "2"
         fail_msg: 'user_valid_gpg_keys imported trust NOT correct (expected 2).'

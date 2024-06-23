@@ -1,9 +1,9 @@
 ---
-- name: 'Default | prepare'
+- name: 'Role account add | prepare'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | prepare | base packages for bare-metal equivalency'
+    - name: 'Role account add | prepare | base packages for bare-metal equivalency'
       ansible.builtin.apt:
         name:
           - 'openssh-server'  # ssh-keygen use in ansible.builtin.user.

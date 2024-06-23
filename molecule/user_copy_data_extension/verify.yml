@@ -1,15 +1,16 @@
 ---
+# yamllint disable rule:line-length
 # Verify copy_data extension works properly.
-- name: 'Default | verify | user copy data'
+- name: 'User copy data extension | verify | user copy data'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | user copy data | query copied user data'
+    - name: 'User copy data extension | verify | user copy data | query copied user data'
       ansible.builtin.stat:
         path: '/home/user_copy_data/copy_data/user_files_test'
       register: _test_users_copy
 
-    - name: 'Default | verify | user copy data | assert copied user data'
+    - name: 'User copy data extension | verify | user copy data | assert copied user data'
       ansible.builtin.assert:
         that:
           - _test_users_copy.stat.exists

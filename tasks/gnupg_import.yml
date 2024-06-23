@@ -19,31 +19,34 @@
 #   5 = I trust ultimately
 #
 # gpg:
-#     dict GPG key configuration.
+#     dict - GPG key configuration.
 #   config: str - gpg.conf settings
 #       Default: '' (empty config).
 #   gpg_keys:
-#     note: str - plain text context note for key
-#     fingerprint: str - key fingerprint (no spaces)
-#     public_key: str - public key. This may be either the PGP block
-#         (starting with -----BEGIN ...) or a filepath containing the key.
-#     private_key: str - private key. This may be either the PGP block
-#         (starting with -----BEGIN ...) or a filepath containing the key.
-#     password: str - private key password
-#     trust: int - custom trust level (1-5) for imported key
-#         Values are automatically adjusted for export/import values (+1).
-#         Do **NOT** blindly copy values from --export-ownertrust.
-#         See tasks/gnupg.yml for more details.
-#       Values:
-#         1 (export/import: 2): I don't know or won't say
-#         2 (export/import: 3): I do NOT trust
-#         3 (export/import: 4): I trust marginally
-#         4 (export/import: 5): I trust fully
-#         5 (export/import: 6): I trust ultimately
+#       list of dict - GPG key material to manage.
+#     - note: str - plain text context note for key
+#       fingerprint: str - key fingerprint (no spaces)
+#       public_key: str - public key
+#             This may be either the PGP block (starting with
+#             -----BEGIN ...) or filepath containing the key.
+#       private_key: str - private key
+#             This may be either the PGP block (starting with
+#             -----BEGIN ...) or filepath containing the key.
+#       password: str - private key password
+#       trust: int - custom trust level (1-5) for imported key
+#             Values automatically adjusted for export/import values (+1).
+#             Do **NOT** blindly copy values from --export-ownertrust.
+#             See tasks/gnupg.yml for more details.
+#           Values:
+#             1: (export/import: 2) I don't know or won't say
+#             2: (export/import: 3) I do NOT trust
+#             3: (export/import: 4) I trust marginally
+#             4: (export/import: 5) I trust fully
+#             5: (export/import: 6) I trust ultimately
 #
 # Args:
-#   _users: dict - user with 'gpg' key set.
-#   key: dict - information on one gpg keypair per _user.gpg.gpg_keys.
+#   _users: dict - user with 'gpg' key set
+#   key: dict - information on one GPG keypair per _user.gpg.gpg_keys
 #
 # Reference:
 # * https://security.stackexchange.com/questions/129474/how-to-raise-a-key-to-ultimate-trust-on-another-machine

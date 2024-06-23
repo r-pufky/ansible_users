@@ -6,15 +6,15 @@
 # Creates a user based on the users_user_{LABEL} variable from host inventory.
 # See default/main.yml for user variable details.
 #
-# Note: if include_group is true, the same named users_group_{LABEL} will
-#     automatically be included. This allows a user to be created without
-#     needed to specify the same group in another users_accounts_ variable.
+# If include_group is true, the same named users_group_{LABEL} will
+# automatically be included. This allows a user to be created without needed to
+# specify the same group in another users_accounts_ variable.
 #
 # Using default(omit) will pass a null value to task, ensuring that specific
 # option is disabled when executed.
 #
 # Args:
-#   user: str - user to manage.
+#   user: str - user to manage
 #
 # Reference:
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html

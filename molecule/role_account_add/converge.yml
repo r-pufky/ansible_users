@@ -4,32 +4,32 @@
 # Reference:
 # * https://github.com/ansible/molecule/issues/816
 
-- name: 'Default | converge'
+- name: 'Role account add | converge'
   hosts: all
   gather_facts: true
   tags: 'molecule-idempotence-notest'
   tasks:
-    - name: 'Default | converge | create a user with default values'
+    - name: 'Role account add | converge | create a user with default values'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_group: false
         users_role_user:
           name: 'user_all_defaults_valid'
 
-    - name: 'Default | converge | create a group with default values'
+    - name: 'Role account add | converge | create a group with default values'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_user: false
         users_role_group:
           name: 'group_all_defaults_valid'
 
-    - name: 'Default | converge | create a group with ALL values'
+    - name: 'Role account add | converge | create a group with ALL values'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_user: false
@@ -41,9 +41,9 @@
           non_unique: false
           system: true
 
-    - name: 'Default | converge | create a user with ALL values'
+    - name: 'Role account add | converge | create a user with ALL values'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_group: false
@@ -84,9 +84,9 @@
           umask: '0277'
           update_password: 'always'
 
-    - name: 'Default | converge | create a user/group simultaneously'
+    - name: 'Role account add | converge | create a user/group simultaneously'
       ansible.builtin.include_role:
-        name: 'users'
+        name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_user:

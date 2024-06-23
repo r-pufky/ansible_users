@@ -1,9 +1,10 @@
 ---
-- name: 'Default | prepare'
+# yamllint disable rule:line-length
+- name: 'User copy data extension | prepare'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | prepare | base packages for bare-metal equivalency'
+    - name: 'User copy data extension | prepare | base packages for bare-metal equivalency'
       ansible.builtin.apt:
         name:
           - 'openssh-server'  # ssh-keygen use in ansible.builtin.user.

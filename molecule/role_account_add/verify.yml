@@ -3,16 +3,16 @@
 # As these are encapsulated ansible tasks just ensure that sending all options
 # successfully executes, as well as toggling user and group options, and
 # minimum configuration (excluding auto UID/GID for idempotent testing).
-- name: 'Default | verify | user/group defaults'
+- name: 'Role account add | verify | user/group defaults'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | user/group defaults | query user_all_defaults_valid'
+    - name: 'Role account add | verify | user/group defaults | query user_all_defaults_valid'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_all_defaults_valid'
 
-    - name: 'Default | verify | user/group defaults | assert user user_all_defaults_valid'
+    - name: 'Role account add | verify | user/group defaults | assert user user_all_defaults_valid'
       ansible.builtin.assert:
         that:
           - '"user_all_defaults_valid" in ansible_facts.getent_passwd'
@@ -23,12 +23,12 @@
         success_msg: 'user_all_defaults_valid correct.'
         fail_msg: 'user_all_defaults_valid incorrect passwd values.'
 
-    - name: 'Default | verify | user/group defaults | query group_all_defaults_valid'
+    - name: 'Role account add | verify | user/group defaults | query group_all_defaults_valid'
       ansible.builtin.getent:
         database: 'group'
         key: 'group_all_defaults_valid'
 
-    - name: 'Default | verify | user/group defaults | assert group group_all_defaults_valid'
+    - name: 'Role account add | verify | user/group defaults | assert group group_all_defaults_valid'
       ansible.builtin.assert:
         that:
           - '"group_all_defaults_valid" in ansible_facts.getent_group'
@@ -36,16 +36,16 @@
         success_msg: 'group_all_defaults_valid correct.'
         fail_msg: 'group_all_defaults_valid incorrect passwd values.'
 
-- name: 'Default | verify | user/group all values'
+- name: 'Role account add | verify | user/group all values'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | user/group all values | query group_all_specified_values'
+    - name: 'Role account add | verify | user/group all values | query group_all_specified_values'
       ansible.builtin.getent:
         database: 'group'
         key: 'group_all_specified_values'
 
-    - name: 'Default | verify | user/group all values | assert group group_all_specified_values'
+    - name: 'Role account add | verify | user/group all values | assert group group_all_specified_values'
       ansible.builtin.assert:
         that:
           - '"group_all_specified_values" in ansible_facts.getent_group'
@@ -53,12 +53,12 @@
         success_msg: 'group_all_specified_values correct.'
         fail_msg: 'group_all_specified_values incorrect passwd values.'
 
-    - name: 'Default | verify | user/group all values | query user_all_specified_values'
+    - name: 'Role account add | verify | user/group all values | query user_all_specified_values'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_all_specified_values'
 
-    - name: 'Default | verify | user/group all values | assert user user_all_specified_values'
+    - name: 'Role account add | verify | user/group all values | assert user user_all_specified_values'
       ansible.builtin.assert:
         that:
           - '"user_all_specified_values" in ansible_facts.getent_passwd'
@@ -70,21 +70,21 @@
         success_msg: 'user_all_specified_values correct.'
         fail_msg: 'user_all_specified_values incorrect passwd values.'
 
-- name: 'Default | verify | simultaneous user/group'
+- name: 'Role account add | verify | simultaneous user/group'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | simultaneous user/group | query user_simul_user'
+    - name: 'Role account add | verify | simultaneous user/group | query user_simul_user'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_simul_user'
 
-    - name: 'Default | verify | simultaneous user/group | query user_simul_group'
+    - name: 'Role account add | verify | simultaneous user/group | query user_simul_group'
       ansible.builtin.getent:
         database: 'group'
         key: 'user_simul_group'
 
-    - name: 'Default | verify | simultaneous user/group | assert group user_simul_group'
+    - name: 'Role account add | verify | simultaneous user/group | assert group user_simul_group'
       ansible.builtin.assert:
         that:
           - '"user_simul_group" in ansible_facts.getent_group'
@@ -92,7 +92,7 @@
         success_msg: 'user_simul_group correct.'
         fail_msg: 'user_simul_group incorrect passwd values.'
 
-    - name: 'Default | verify | simultaneous user/group | assert user user_simul_user'
+    - name: 'Role account add | verify | simultaneous user/group | assert user user_simul_user'
       ansible.builtin.assert:
         that:
           - '"user_simul_user" in ansible_facts.getent_passwd'

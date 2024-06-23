@@ -8,6 +8,7 @@
 # used in the general 'users' role for creating user accounts.
 
 # Create role group?
+#
 # Executes specific group creation using users_role_group; created before the
 # user account is created. Overwrites existing group data.
 #
@@ -15,6 +16,7 @@
 users_role_create_group: true
 
 # Create role user?
+#
 # Executes specific user creation using users_role_user; created after the
 # group is created. Overwrites existing user data.
 #
@@ -22,9 +24,9 @@ users_role_create_group: true
 users_role_create_user: true
 
 # Group settings.
-# Based on ansible.builtin.group.
 #
 # users_role_group:
+#     dict - group definition from ansible.builtin.group.
 #   force: bool - delete group even if it is a primary users' group
 #       Default: False.
 #   gid: int - group id
@@ -48,14 +50,16 @@ users_role_create_user: true
 users_role_group: {}
 
 # User settings.
-# Based on ansible.builtin.user.
 #
 # users_role_user:
+#     list of dict - user setting definitions.
 #   user:
-#       dict user definition from ansible.builtin.user. Use {LABEL} to
-#       reference the group definition in applying users/groups.
-#     append: bool - True add users to groups without removing current ones
-#         False remove user from unspecified groups.
+#       dict - user definition from ansible.builtin.user. Use {LABEL} to
+#              reference the group definition in applying users/groups.
+#     append: bool - append user to groups specified
+#         Values:
+#            True: add users to groups without removing current ones
+#           False: remove user from unspecified groups.
 #         Default: False.
 #     authorization: str - set user authorization
 #         Default: omit (no authorizations).
@@ -68,38 +72,41 @@ users_role_group: {}
 #           -1: remove expiry time
 #            *: Unix Epoch account expiry time
 #         Default: -1.
-#     force: bool - force removal of user owned files (if user deleted) or
-#         overwriting existing SSH keys.
+#     force: bool - force user file removal, SSH key overwrites
+#         Values:
+#            True: force removal of user owned files (if user is deleted) or
+#                  overwrite existing SSH keys.
+#           False: keep user files on user deletion, do not overwrite SSH keys
 #         Default: False.
 #     generate_ssh_key: bool - generate a user SSH key on creation
 #         Default: False.
 #     group: str - user primary group
 #         Default: omit (system default).
 #     groups: list of str - additional groups user is a member of
-#         User removed from all other groups unless append is used.
+#           User removed from all other groups unless append is used.
 #         Default: omit (no groups).
 #     hidden: bool - hide user from login window (OSX only)
 #         Default: omit (False).
 #     home: str - user home directory
 #         Special Case:
-#           '/nonexistent': debian canonical non-existent home directory.
-#           omit: created in /home/{USER} if enabled.
+#           '/nonexistent': debian canonical non-existent home directory
+#                     omit: created in /home/{USER} if enabled
 #         Default: '/nonexistent'.
 #     local: bool - force use of local command alternatives
 #         Default: False.
 #     login_class: str - User login class (Generally BSD)
 #         Default: omit (no class).
 #     move_home: bool - move user's old home to home if it does not exist and
-#         old home already exists.
+#           old home already exists.
 #         Default: False.
 #     name: str - user name
 #     non_unique: bool - use a non-unique UID
 #         Default: False.
 #     password: str - password hash (must be hashed)
-#         Generate SHA-512 passwd hash via 'mkpasswd -m sha-512'.
-#         Packages:
-#           Debian: 'apt install whois'
-#           Manjaro: 'pamac install mkpasswd' (remove 'expect', conflicts)
+#           Generate SHA-512 passwd hash via 'mkpasswd -m sha-512'.
+#           Packages:
+#             Debian: 'apt install whois'
+#             Manjaro: 'pamac install mkpasswd' (remove 'expect', conflicts)
 #         Values:
 #           !: disabled/locked password
 #           *: disabled/locked password
@@ -110,7 +117,7 @@ users_role_group: {}
 #         Default: omit (disabled).
 #     password_expire_warn: int - number of days of warning before expiry
 #         Default: omit (disabled).
-#     password_lock: bool - lock the password. Does not disable the user.
+#     password_lock: bool - lock the password, does not disable the user
 #         Default: False.
 #     profile: str - set user profile (illumos/solaris)
 #         Default: omit (no profile).
@@ -131,20 +138,21 @@ users_role_group: {}
 #     ssh_key_file: str - path to SSH key filename
 #         Default: '.ssh/id_rsa'.
 #     ssh_key_passphrase: str - SSH key password
-#         Special Case: '' disables password (no passphrase).
-#         Default: Random 32 character alphanumeric string.
+#         Special Case:
+#           '': disables password (no passphrase)
+#         Default: '{RANDOM}' (randomly generated).
 #     ssh_key_type: str - SSH key type
 #         Default: 'rsa'.
 #     system: bool - create system account
 #         Default: False.
 #     uid: int - user UID
 #         Default: omit (auto generated).
-#     umask: str - Umask of the user
-#         Requires not using 'local'.
+#     umask: str - umask of the user
+#           Requires not using 'local'.
 #         Default: omit (system default).
 #     update_password: str - password update policy
 #         Values:
-#           always: update passwords if they differ
+#              always: update passwords if they differ
 #           on_create: only set password for new user creation
 #         Default: 'always'.
 #

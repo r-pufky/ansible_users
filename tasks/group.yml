@@ -3,14 +3,14 @@
 ###############################################################################
 # Manage Groups
 ###############################################################################
-# Creates a group based on the users_group_{LABEL} variable from host inventory.
-# See default/main.yml for group variable details.
+# Creates a group based on the users_group_{LABEL} variable from host
+# inventory. See default/main.yml for group variable details.
 #
 # Using default(omit) will pass a null value to task, ensuring that specific
 # option is disabled when executed.
 #
 # Args:
-#   group: str - group to manage.
+#   group: str - group to manage
 #
 # Reference:
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
