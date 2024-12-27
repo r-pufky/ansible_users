@@ -67,40 +67,40 @@
     not key.fingerprint in _users_gpg_key_list
   block:
     - name: 'Gnupg import | write public key {{ key.fingerprint }}'
+      when: key.public_key.startswith("-")
       ansible.builtin.copy:
         dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
         owner: '{{ _users.name }}'
         group: '{{ _users.name }}'
         mode: '0400'
         content: '{{ key.public_key }}'
-      when: key.public_key.startswith("-")
 
     - name: 'Gnupg import | write public key {{ key.fingerprint }}'
+      when: not key.public_key.startswith("-")
       ansible.builtin.copy:
         src: '{{ key.public_key }}'
         dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
         owner: '{{ _users.name }}'
         group: '{{ _users.name }}'
         mode: '0400'
-      when: not key.public_key.startswith("-")
 
     - name: 'Gnupg import | write private key {{ key.fingerprint }}'
+      when: key.private_key is defined and key.private_key.startswith("-")
       ansible.builtin.copy:
         dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
         owner: '{{ _users.name }}'
         group: '{{ _users.name }}'
         mode: '0400'
         content: '{{ key.private_key }}'
-      when: key.private_key is defined and key.private_key.startswith("-")
 
     - name: 'Gnupg import | write private key {{ key.fingerprint }}'
+      when: key.private_key is defined and not key.private_key.startswith("-")
       ansible.builtin.copy:
         src: '{{ key.private_key }}'
         dest: '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
         owner: '{{ _users.name }}'
         group: '{{ _users.name }}'
         mode: '0400'
-      when: key.private_key is defined and not key.private_key.startswith("-")
 
     - name: 'Gnupg import | public key {{ key.fingerprint }}'
       ansible.builtin.command: 'gpg --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
@@ -111,22 +111,22 @@
       become_user: '{{ _users.name }}'
 
     - name: 'Gnupg import | private key {{ key.fingerprint }}'
+      when: key.private_key is defined and not key.password is defined
       ansible.builtin.command: 'gpg --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
       register: _users_gpg_private_import
       changed_when: _users_gpg_public_import.rc == 0
       failed_when: _users_gpg_private_import.rc > 1
       become: true
       become_user: '{{ _users.name }}'
-      when: key.private_key is defined and not key.password is defined
 
     - name: 'Gnupg import | private key (with password) {{ key.fingerprint }}'
+      when: key.private_key is defined and key.password is defined
       ansible.builtin.command: 'gpg --passphrase {{ key.password }} --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
       register: _users_gpg_private_import
       changed_when: _users_gpg_public_import.rc == 0
       failed_when: _users_gpg_private_import.rc > 1
       become: true
       become_user: '{{ _users.name }}'
-      when: key.private_key is defined and key.password is defined
 
     - name: 'Gnupg import | cleanup'
       ansible.builtin.file:

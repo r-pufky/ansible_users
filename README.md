@@ -11,7 +11,8 @@ consumption.
 [defaults](https://github.com/r-pufky/ansible_users/tree/main/defaults/main/)
 
 ## Dependencies
-N/A
+Part of the [r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv)
+collection.
 
 ## Example Playbook
 Consume this role to easily create consistent complex users and groups across a
@@ -181,15 +182,15 @@ roles/my_custom_role/tasks/add_mandatory_users.yml
       gid: 800
 ```
 
-## Unit Testing
-Test framework requires molecule and rootless podman setup.
+## Development
+Configure [environment](https://github.com/r-pufky/ansible_collection_srv/blob/main/docs/dev/environment/README.md)
 
 Run all unit tests:
 ``` bash
 molecule test --all
 ```
 
-## Issues
+### Issues
 Create a bug and provide as much information as possible.
 
 Associate pull requests with a submitted bug.

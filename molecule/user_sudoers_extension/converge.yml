@@ -5,8 +5,8 @@
 # * https://github.com/ansible/molecule/issues/816
 
 - name: 'User sudoers extension | converge'
-  hosts: all
-  gather_facts: true
+  hosts: 'all'
+  gather_facts: false
   tags: 'molecule-idempotence-notest'
   tasks:
     - name: 'User sudoers extension | converge | create test users and groups'

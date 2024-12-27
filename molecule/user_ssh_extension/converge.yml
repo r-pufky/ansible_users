@@ -1,18 +1,15 @@
 ---
 # Idempotent testing disabled as specific commands will never be idempotent.
+# * User accounts are only created once.
 #
 # Reference:
 # * https://github.com/ansible/molecule/issues/816
 
 - name: 'User SSH extension | converge'
-  hosts: all
-  gather_facts: true
+  hosts: 'all'
+  gather_facts: false
   tags: 'molecule-idempotence-notest'
   tasks:
     - name: 'User SSH extension | converge | create test users and groups'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
-      vars:
-        users_accounts_users:
-          - 'ssh_extension'
-          - 'ssh_extension_conflict'

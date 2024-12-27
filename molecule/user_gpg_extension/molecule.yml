@@ -15,6 +15,8 @@ provisioner:
   inventory:
     group_vars:
       all:
+        users_accounts_users:
+          - 'user_valid_gpg_keys'
         users_group_user_valid_gpg_keys:
           name: 'user_valid_gpg_keys'
           gid: 800
@@ -69,13 +71,11 @@ provisioner:
                     -----END PGP PRIVATE KEY BLOCK-----
                   trust: 1
 platforms:
-  - name: 'debian-12'
+  - name: 'debian-12-user_gpg_extension'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
     command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:
