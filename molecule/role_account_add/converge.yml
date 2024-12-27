@@ -1,15 +1,9 @@
 ---
-# Idempotent testing disabled as specific commands will never be idempotent.
-#
-# Reference:
-# * https://github.com/ansible/molecule/issues/816
-
 - name: 'Role account add | converge'
-  hosts: all
-  gather_facts: true
-  tags: 'molecule-idempotence-notest'
+  hosts: 'all'
+  gather_facts: false
   tasks:
-    - name: 'Role account add | converge | create a user with default values'
+    - name: 'Role account add | converge | aply r_pufky.srv.users (user default values)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
@@ -18,7 +12,7 @@
         users_role_user:
           name: 'user_all_defaults_valid'
 
-    - name: 'Role account add | converge | create a group with default values'
+    - name: 'Role account add | converge | apply r_pufky.srv.user (group default values)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
@@ -27,7 +21,7 @@
         users_role_group:
           name: 'group_all_defaults_valid'
 
-    - name: 'Role account add | converge | create a group with ALL values'
+    - name: 'Role account add | converge | apply r_pufky.srv.user (group ALL values)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
@@ -41,7 +35,7 @@
           non_unique: false
           system: true
 
-    - name: 'Role account add | converge | create a user with ALL values'
+    - name: 'Role account add | converge | apply r_pufky.srv.users (user ALL values)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'
@@ -84,7 +78,7 @@
           umask: '0277'
           update_password: 'always'
 
-    - name: 'Role account add | converge | create a user/group simultaneously'
+    - name: 'Role account add | converge | apply r_pufky.srv.users (user/group simultaneously)'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
         tasks_from: 'role_account_add'

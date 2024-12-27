@@ -1,6 +1,5 @@
 ---
 # yamllint disable rule:line-length
-# Verify SSH extension works properly.
 - name: 'User SSH extension | verify | SSH extension no conflicts'
   hosts: 'all'
   gather_facts: false

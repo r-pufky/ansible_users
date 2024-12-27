@@ -1,6 +1,5 @@
 ---
 # yamllint disable rule:line-length
-# Verify sudoers extensions works properly.
 - name: 'User sudoers extension | verify | sudoers config'
   hosts: 'all'
   gather_facts: false

@@ -1,6 +1,5 @@
 ---
 # yamllint disable rule:line-length
-# Verify copy_data extension works properly.
 - name: 'User copy data extension | verify | user copy data'
   hosts: 'all'
   gather_facts: false

@@ -1,17 +1,8 @@
 ---
-# Idempotent testing disabled as specific commands will never be idempotent.
-#
-# Reference:
-# * https://github.com/ansible/molecule/issues/816
-
 - name: 'User GPG extension | converge'
-  hosts: all
-  gather_facts: true
-  tags: 'molecule-idempotence-notest'
+  hosts: 'all'
+  gather_facts: false
   tasks:
-    - name: 'User GPG extension | converge | create test users and groups'
+    - name: 'User GPG extension | converge | apply r_pufky.srv.users'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
-      vars:
-        users_accounts_users:
-          - 'user_valid_gpg_keys'

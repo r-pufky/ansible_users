@@ -1,8 +1,5 @@
 ---
 # yamllint disable rule:line-length
-# As these are encapsulated ansible tasks just ensure that sending all options
-# successfully executes, as well as toggling user and group options, and
-# minimum configuration (excluding auto UID/GID for idempotent testing).
 - name: 'Default | verify | minimum group specification'
   hosts: 'all'
   gather_facts: false
@@ -182,3 +179,16 @@
           - ansible_facts.getent_passwd.user_group[5] == '/bin/bash'
           - _test_users_user_group_home.stat.exists
         fail_msg: 'user_group does not exist, not uid=810, or home directory does not exist.'
+
+- name: 'Default | verify | high-entropy packages'
+  hosts: 'all'
+  gather_facts: false
+  tasks:
+    - name: 'Default | verify | high-entropy packages | gather installed packages'
+      ansible.builtin.package_facts:
+
+    - name: 'Default | verify | high-entropy packages | assert rng-tools installed'
+      ansible.builtin.assert:
+        that:
+          - '"rng-tools5" in ansible_facts.packages'
+        fail_msg: 'rng-tools5 should be install on containers for high-entropy.'

@@ -1,6 +1,7 @@
 ---
+# yamllint disable rule:line-length
 collections:
-  # https://docs.ansible.com/ansible/latest/collections/community/general/sudoers_module.html
-  - community.general.sudoers
+  - 'community.general.sudoers'  # https://docs.ansible.com/ansible/latest/collections/community/general/sudoers_module.html
+  - 'r_pufky.srv'  # https://github.com/r-pufky/ansible_collection_srv
 
 roles: []

@@ -1,0 +1,59 @@
+---
+###############################################################################
+# Users Configuration
+###############################################################################
+# User accounts are automatically detected based on the users_user_ prefix and
+# are created after groups users_group_ definitions. See
+# account_definitions.yml.
+#
+# Generally these definitions should be available via host_vars or group_vars.
+#
+# Accounts are applied in the order:
+#
+#   remove: users -> groups
+#   add: groups -> users
+
+# Group to add during host configuration.
+#
+# List of group names to add to system (from users_group_{LABEL}).
+#
+# users_accounts_groups:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# Default: [].
+users_accounts_groups: []
+
+# Groups to remove during host configuration.
+#
+# List of group names to add to system (from users_group_{LABEL}).
+#
+# users_accounts_groups_absent:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# Default: [].
+users_accounts_groups_absent: []
+
+# Users to add during host configuration.
+#
+# List of user names to add to system (from users_user_{LABEL}).
+#
+# users_accounts_users:
+#   - 'exampleuser'
+#
+# Default: [].
+users_accounts_users: []
+
+# User to remove during host configuration.
+#
+# List of user names to add to system (from users_user_{LABEL}).
+#
+# Files are explicitly kept to prevent unexpected data loss from files owned by
+# that user being deleted when the account is removed.
+#
+# users_accounts_users_absent:
+#   - 'exampleuser'
+#
+# Default: [].
+users_accounts_users_absent: []

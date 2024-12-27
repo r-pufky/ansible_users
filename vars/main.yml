@@ -1,7 +1,7 @@
 ---
 # yamllint disable rule:line-length
 ###############################################################################
-# Default User Dependencies
+# User Role Options
 ###############################################################################
 #
 # Reference:
@@ -13,25 +13,27 @@ users_role_validate_release: 'bookworm'
 
 # Default packages for users.
 users_role_packages:
-  - 'gnupg2'
+  - 'gnupg2'  # GPG
   - 'acl'  # unprivileged user GPG (gnupg2) setup
 
-# Packages to apply to ALL containers.
+# High entropy packages.
 #
-# containers are detected via ansible_virtualization_role.
-users_role_container_gnupg_packages:
-  - 'rng-tools5'  # https://packages.debian.org/bookworm/rng-tools5
-  - 'haveged'  # https://packages.debian.org/bookworm/haveged
-
-# Packages to apply to ALL virtual machines.
-# Virtual machines are detected via ansible_virtualization_role.
+# Since kernel 5.4, haveged has been implemented into the kernel; it still
+# produces another source of random data.
 #
-# Default: See below.
-users_role_vm_gnupg_packages:
-  - 'haveged'  # https://packages.debian.org/bookworm/haveged
+# Reference:
+# * https://github.com/jirka-h/haveged
+# * https://github.com/nhorman/rng-tools
+users_role_high_entropy_packages:
+  - 'rng-tools5'
+  - 'haveged'
 
-# Default state for apt package installation. See ansible.builtin.apt.
-users_role_package_state: 'latest'
+# SSH keygen packages.
+#
+# Only install minimum packages (client) to enable use of ssh-keygen for
+# ansible role.
+users_role_ssh_keygen_packages:
+  - 'openssh-client'
 
 ###############################################################################
 # Password Hash Defaults

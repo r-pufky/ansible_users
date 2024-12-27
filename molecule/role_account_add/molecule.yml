@@ -1,4 +1,7 @@
 ---
+# As these are encapsulated ansible tasks just ensure that sending all options
+# successfully executes, as well as toggling user and group options, and
+# minimum configuration (excluding auto UID/GID for idempotent testing).
 dependency:
   name: 'galaxy'
 driver:
@@ -12,13 +15,11 @@ provisioner:
     ssh_connection:
       pipelining: false
 platforms:
-  - name: 'debian-12'
+  - name: 'users-debian-12-role_account_add'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
     command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:
@@ -27,3 +28,17 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # User accounts are only created once.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

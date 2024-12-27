@@ -1,25 +1,8 @@
 ---
-# Idempotent testing disabled as specific commands will never be idempotent.
-#
-# Reference:
-# * https://github.com/ansible/molecule/issues/816
-
 - name: 'Default | converge'
-  hosts: all
-  gather_facts: true
-  tags: 'molecule-idempotence-notest'
+  hosts: 'all'
+  gather_facts: false
   tasks:
-    - name: 'Default | converge | create test users and groups'
+    - name: 'Default | converge | apply r_pufky.srv.users'
       ansible.builtin.include_role:
         name: 'r_pufky.srv.users'
-      vars:
-        users_accounts_groups:
-          - 'minimum_group'
-          - 'group_all_options'
-          - 'user_all_options'
-        users_accounts_users:
-          - 'minimum_user'
-          - 'explicit_user_group'
-          - 'user_all_options'
-          - 'user_lockdown'
-          - 'user_group_alt_profile'

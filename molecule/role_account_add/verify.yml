@@ -1,8 +1,5 @@
 ---
 # yamllint disable rule:line-length
-# As these are encapsulated ansible tasks just ensure that sending all options
-# successfully executes, as well as toggling user and group options, and
-# minimum configuration (excluding auto UID/GID for idempotent testing).
 - name: 'Role account add | verify | user/group defaults'
   hosts: 'all'
   gather_facts: false

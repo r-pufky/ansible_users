@@ -1,6 +1,5 @@
 ---
 # yamllint disable rule:line-length
-# Verify GPG extension works properly.
 - name: 'User GPG extension | verify | gpg extension'
   hosts: 'all'
   gather_facts: false

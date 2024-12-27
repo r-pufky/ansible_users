@@ -1,4 +1,5 @@
 ---
+# Verify copy_data extension works properly.
 dependency:
   name: 'galaxy'
 driver:
@@ -14,6 +15,8 @@ provisioner:
   inventory:
     group_vars:
       all:
+        users_accounts_users:
+          - 'user_copy_data'
         users_group_user_copy_data:
           name: 'user_copy_data'
           gid: 800
@@ -26,13 +29,11 @@ provisioner:
             include_group: true
             copy_data: 'files/copy_data'
 platforms:
-  - name: 'debian-12'
+  - name: 'users-debian-12-user_copy_data_extension'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
     command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:
@@ -41,3 +42,17 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # User accounts are only created once.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

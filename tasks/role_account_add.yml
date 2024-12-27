@@ -5,21 +5,32 @@
 ###############################################################################
 # Adds a given user/group for calling role.
 
+- name: 'Role account add | install packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.apt'
+  vars:
+    apt_packages:
+      - '{{ users_role_packages }}'
+      - '{{ users_role_high_entropy_packages if users_high_entropy_enable else [] }}'
+      - '{{ users_role_ssh_keygen_packages }}'
+    apt_package_update_cache: true
+
 - name: 'Role account add | query user {{ users_role_user.name | default("") }}'
+  when: users_role_create_user
   ansible.builtin.command: 'id {{ users_role_user.name }}'
   register: _users_role_user_exists
   changed_when: _users_role_user_exists.rc > 0
   failed_when: false
-  when: users_role_create_user
 
 - name: 'Role account add | query group {{ users_role_group.name | default("") }}'
+  when: users_role_create_group
   ansible.builtin.command: 'groups {{ users_role_group.name }}'
   register: _users_role_group_exists
   changed_when: _users_role_group_exists.rc > 0
   failed_when: false
-  when: users_role_create_group
 
 - name: 'Role account add | create group {{ users_role_group.name | default("") }}'
+  when: users_role_create_group and _users_role_group_exists.rc != 0
   ansible.builtin.group:
     force: '{{ users_role_group.force | default(false) }}'
     gid: '{{ users_role_group.gid | default(omit) }}'
@@ -28,9 +39,9 @@
     non_unique: '{{ users_role_group.non_unique | default(false) }}'
     state: 'present'
     system: '{{ users_role_group.system | default(false) }}'
-  when: users_role_create_group and _users_role_group_exists.rc != 0
 
 - name: 'Role account add | create user {{ users_role_user.name | default("") }} {{ users_role_user.comment | default("") }}'  # noqa name[template] readability
+  when: users_role_create_user and _users_role_user_exists.rc != 0
   ansible.builtin.user:
     append: '{{ users_role_user.append | default(false) }}'
     authorization: '{{ users_role_user.authorization | default(omit) }}'
@@ -69,4 +80,3 @@
     uid: '{{ users_role_user.uid | default(omit) }}'
     umask: '{{ users_role_user.umask | default(omit) }}'
     update_password: '{{ users_role_user.update_password | default("always") }}'
-  when: users_role_create_user and _users_role_user_exists.rc != 0

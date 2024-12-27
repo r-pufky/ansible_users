@@ -1,5 +1,6 @@
 ---
 # yamllint disable rule:line-length
+# Verify sudoers extensions works properly.
 dependency:
   name: 'galaxy'
 driver:
@@ -35,14 +36,14 @@ provisioner:
               runas: 'root'
               setenv: true
               validation: 'detect'
+        users_accounts_users:
+          - 'sudoers_extension'
 platforms:
-  - name: 'debian-12'
+  - name: 'users-debian-12-user_sudoers_extension'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
     command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:
@@ -51,3 +52,17 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # User accounts are only created once.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

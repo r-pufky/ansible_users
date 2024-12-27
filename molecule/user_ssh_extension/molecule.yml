@@ -1,4 +1,5 @@
 ---
+# Verify SSH extension works properly.
 dependency:
   name: 'galaxy'
 driver:
@@ -14,6 +15,9 @@ provisioner:
   inventory:
     group_vars:
       all:
+        users_accounts_users:
+          - 'ssh_extension'
+          - 'ssh_extension_conflict'
         users_group_ssh_extension:
           name: 'ssh_extension'
           gid: 800
@@ -61,13 +65,11 @@ provisioner:
                 Host *
                   StrictHostKeyChecking accept-new
 platforms:
-  - name: 'debian-12'
+  - name: 'user-debian-12-user_ssh_extension'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    capabilities:
-      - 'SYS_ADMIN'
     command: '/lib/systemd/systemd'
     pre_build_image: true
 verifier:
@@ -76,3 +78,17 @@ lint: |
   set -e
   yamllint .
   ansible-lint .
+scenario:
+  test_sequence:
+    # - 'dependency'
+    # - 'cleanup'
+    - 'destroy'
+    - 'syntax'
+    - 'create'
+    # - 'prepare'
+    - 'converge'
+    # - 'idempotence'  # User accounts are only created once.
+    # - 'side_effect'
+    - 'verify'
+    # - 'cleanup'
+    - 'destroy'

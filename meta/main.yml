@@ -4,7 +4,7 @@ galaxy_info:
   description: 'User management.'
   company: 'N/A'
   license: 'AGPL-3.0 License'
-  min_ansible_version: '2.17.0'
+  min_ansible_version: '2.18.0'
 
   platforms:
     - name: 'Debian'
@@ -15,5 +15,8 @@ galaxy_info:
     - 'user'
     - 'management'
     - 'group'
+    - 'ssh'
+    - 'sudoers'
+    - 'gpg'
 
 dependencies: []

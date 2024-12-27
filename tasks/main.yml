@@ -1,4 +1,15 @@
 ---
+# yamllint disable rule:line-length
+- name: 'Install packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.apt'
+  vars:
+    apt_packages:
+      - '{{ users_role_packages }}'
+      - '{{ users_role_high_entropy_packages if users_high_entropy_enable else [] }}'
+      - '{{ users_role_ssh_keygen_packages }}'
+    apt_package_update_cache: true
+
 - name: 'Remove groups'
   ansible.builtin.group:
     name: '{{ item }}'
