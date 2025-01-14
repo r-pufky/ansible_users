@@ -15,6 +15,9 @@
 #
 # Bookworm migrated SSH user group to '_ssh'. See reference.
 #
+# Role steps are exactly the same. Always change role_account_add.yml when
+# making changes here, unless those changes are defaults.
+#
 # Args:
 #   user: str - user to manage
 #

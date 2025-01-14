@@ -26,7 +26,7 @@ users_accounts_groups: []
 
 # Groups to remove during host configuration.
 #
-# List of group names to add to system (from users_group_{LABEL}).
+# List of group names to remove from system (from users_group_{LABEL}).
 #
 # users_accounts_groups_absent:
 #   - 'examplegroup'
@@ -47,7 +47,7 @@ users_accounts_users: []
 
 # User to remove during host configuration.
 #
-# List of user names to add to system (from users_user_{LABEL}).
+# List of user names to remove from system (from users_user_{LABEL}).
 #
 # Files are explicitly kept to prevent unexpected data loss from files owned by
 # that user being deleted when the account is removed.

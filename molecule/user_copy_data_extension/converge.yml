@@ -1,9 +1,0 @@
----
-# yamllint disable rule:line-length
-- name: 'User copy data extension | converge'
-  hosts: 'all'
-  gather_facts: false
-  tasks:
-    - name: 'User copy data extension | converge | apply r_pufky.srv.users'
-      ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'

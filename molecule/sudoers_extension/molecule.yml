@@ -1,6 +1,6 @@
 ---
-# yamllint disable rule:line-length
-# Verify sudoers extensions works properly.
+# Verify sudoers extensions works properly; apply to both user and role
+# accounts to verify no divergence between account types.
 dependency:
   name: 'galaxy'
 driver:
@@ -38,8 +38,17 @@ provisioner:
               validation: 'detect'
         users_accounts_users:
           - 'sudoers_extension'
+        users_role_group: '{{ users_group_sudoers_extension }}'
+        users_role_user: '{{ users_user_sudoers_extension }}'
 platforms:
-  - name: 'users-debian-12-user_sudoers_extension'
+  - name: 'users-debian-12-sudoers_extension-user'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+  - name: 'users-debian-12-sudoers_extension-role'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:

@@ -37,13 +37,6 @@
 #   non_unique: false
 #   state: 'present'
 #
-# users_accounts_groups:
-#   - 'examplegroup'
-#   - 'another_group'
-#
-# users_accounts_users:
-#   - 'exampleuser'
-#
 # Default: no default option. Explicitly define a unique variable for each.
 #
 # Reference:
@@ -290,9 +283,6 @@
 #       state: 'present'
 #       user: 'exampleuser'
 #       validation: 'detect'
-#       copy_data: 'group_vars/all/users/exampleuser/data'
-#       lockdown: true
-#       include_group: true
 #     gpg:
 #       config: |
 #         personal-cipher-preferences AES256 AES192 AES
@@ -308,6 +298,8 @@
 #     copy_data: 'group_vars/all/users/exampleuser/data'
 #     lockdown: true
 #     include_group: true
+#
+# Default: no default option. Explicitly define a unique variable for each.
 #
 # Reference:
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html

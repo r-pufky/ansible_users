@@ -1,6 +1,7 @@
 ---
 # yamllint disable rule:line-length
-# Verify GPG extension works properly.
+# Verify GPG extension works properly; apply to both user and role accounts to
+# verify no divergence between account types.
 dependency:
   name: 'galaxy'
 driver:
@@ -71,8 +72,17 @@ provisioner:
                     =n8OM
                     -----END PGP PRIVATE KEY BLOCK-----
                   trust: 1
+        users_role_group: '{{ users_group_user_valid_gpg_keys }}'
+        users_role_user: '{{ users_user_user_valid_gpg_keys }}'
 platforms:
-  - name: 'users-debian-12-user_gpg_extension'
+  - name: 'users-debian-12-gpg_extension-user'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+  - name: 'users-debian-12-gpg_extension-role'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:

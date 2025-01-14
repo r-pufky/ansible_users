@@ -9,6 +9,9 @@
 # Using default(omit) will pass a null value to task, ensuring that specific
 # option is disabled when executed.
 #
+# Role steps are exactly the same. Always change role_account_add.yml when
+# making changes here, unless those changes are defaults.
+#
 # Args:
 #   group: str - group to manage
 #

@@ -1,5 +1,6 @@
 ---
-# Verify SSH extension works properly.
+# Verify SSH extension works properly; apply to both user and role accounts to
+# verify no divergence between account types.
 dependency:
   name: 'galaxy'
 driver:
@@ -64,8 +65,17 @@ provisioner:
                 # auto-accept new host keys
                 Host *
                   StrictHostKeyChecking accept-new
+        users_role_group: '{{ users_group_ssh_extension }}'
+        users_role_user: '{{ users_user_ssh_extension }}'
 platforms:
-  - name: 'user-debian-12-user_ssh_extension'
+  - name: 'user-debian-12-ssh_extension-user'
+    image: 'ghcr.io/hifis-net/debian-systemd:12'
+    systemd: 'always'
+    volumes:
+      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
+    command: '/lib/systemd/systemd'
+    pre_build_image: true
+  - name: 'user-debian-12-ssh_extension-role'
     image: 'ghcr.io/hifis-net/debian-systemd:12'
     systemd: 'always'
     volumes:

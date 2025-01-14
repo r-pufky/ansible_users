@@ -5,7 +5,9 @@
 ###############################################################################
 # Role account users are created specifically for other roles to create a
 # default user/group profile for a given role with sane defaults. These are NOT
-# used in the general 'users' role for creating user accounts.
+# used in the general 'users' role for creating user accounts; and are
+# typically specified as one-off users for default accounts required by roles
+# if the user chooses not to manage a user account themselves.
 
 # Create role group?
 #
@@ -25,19 +27,10 @@ users_role_create_user: true
 
 # Group settings.
 #
+# Single group setting from (Group Definition).
+#
 # users_role_group:
-#     dict - group definition from ansible.builtin.group.
-#   force: bool - delete group even if it is a primary users' group
-#       Default: False.
-#   gid: int - group id
-#       Default: omit (auto generated).
-#   local: bool - force use of local command alternatives
-#       Default: False.
-#   name: str - group name
-#   non_unique: bool - force non-unique GID (required gid)
-#       Default: False.
-#   system: bool - create a system group
-#       Default: False.
+#     dict - group definition from r_pufky.srv.users.users_group_*.
 #
 # users_role_group:
 #   name: 'my_service_group'
@@ -46,123 +39,30 @@ users_role_create_user: true
 # Default: {}
 #
 # Reference:
+# * account_definitions.yml
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
 users_role_group: {}
 
 # User settings.
 #
+# Single user setting from (User Definition).
+#
 # users_role_user:
-#     list of dict - user setting definitions.
-#   user:
-#       dict - user definition from ansible.builtin.user. Use {LABEL} to
-#              reference the group definition in applying users/groups.
-#     append: bool - append user to groups specified
-#         Values:
-#            True: add users to groups without removing current ones
-#           False: remove user from unspecified groups.
-#         Default: False.
-#     authorization: str - set user authorization
-#         Default: omit (no authorizations).
-#     comment: str - user comment (GECOS) field
-#         Default: omit (empty).
-#     create_home: bool - create home when user created or non-existent
-#         Default: True.
-#     expires: float - Epoch time to expire user account
-#         Values:
-#           -1: remove expiry time
-#            *: Unix Epoch account expiry time
-#         Default: -1.
-#     force: bool - force user file removal, SSH key overwrites
-#         Values:
-#            True: force removal of user owned files (if user is deleted) or
-#                  overwrite existing SSH keys.
-#           False: keep user files on user deletion, do not overwrite SSH keys
-#         Default: False.
-#     generate_ssh_key: bool - generate a user SSH key on creation
-#         Default: False.
-#     group: str - user primary group
-#         Default: omit (system default).
-#     groups: list of str - additional groups user is a member of
-#           User removed from all other groups unless append is used.
-#         Default: omit (no groups).
-#     hidden: bool - hide user from login window (OSX only)
-#         Default: omit (False).
-#     home: str - user home directory
-#         Special Case:
-#           '/nonexistent': debian canonical non-existent home directory
-#                     omit: created in /home/{USER} if enabled
-#         Default: '/nonexistent'.
-#     local: bool - force use of local command alternatives
-#         Default: False.
-#     login_class: str - User login class (Generally BSD)
-#         Default: omit (no class).
-#     move_home: bool - move user's old home to home if it does not exist and
-#           old home already exists.
-#         Default: False.
-#     name: str - user name
-#     non_unique: bool - use a non-unique UID
-#         Default: False.
-#     password: str - password hash (must be hashed)
-#           Generate SHA-512 passwd hash via 'mkpasswd -m sha-512'.
-#           Packages:
-#             Debian: 'apt install whois'
-#             Manjaro: 'pamac install mkpasswd' (remove 'expect', conflicts)
-#         Values:
-#           !: disabled/locked password
-#           *: disabled/locked password
-#         Default: '!'.
-#     password_expire_max: int - max number of days between password change
-#         Default: omit (disabled).
-#     password_expire_min: int - min number of days between password change
-#         Default: omit (disabled).
-#     password_expire_warn: int - number of days of warning before expiry
-#         Default: omit (disabled).
-#     password_lock: bool - lock the password, does not disable the user
-#         Default: False.
-#     profile: str - set user profile (illumos/solaris)
-#         Default: omit (no profile).
-#     remove: bool - attempt to remove user directories if state is absent
-#         Default: False.
-#     role: str - user role (illumos/solaris)
-#         Default: omit (no role).
-#     seuser: str - set seuser type (user_u) on selinux enabled systems
-#         Default: omit (not set).
-#     shell: str - user shell
-#         Default: '/usr/sbin/nologin'.
-#     skeleton: str - set a home skeleton directory
-#         Default: omit (system default).
-#     ssh_key_bits: int - number of bits in SSH key to create
-#         Default: omit (system default).
-#     ssh_key_comment: str - SSH key comment
-#         Default: 'ansible-generated'.
-#     ssh_key_file: str - path to SSH key filename
-#         Default: '.ssh/id_rsa'.
-#     ssh_key_passphrase: str - SSH key password
-#         Special Case:
-#           '': disables password (no passphrase)
-#         Default: '{RANDOM}' (randomly generated).
-#     ssh_key_type: str - SSH key type
-#         Default: 'rsa'.
-#     system: bool - create system account
-#         Default: False.
-#     uid: int - user UID
-#         Default: omit (auto generated).
-#     umask: str - umask of the user
-#           Requires not using 'local'.
-#         Default: omit (system default).
-#     update_password: str - password update policy
-#         Values:
-#              always: update passwords if they differ
-#           on_create: only set password for new user creation
-#         Default: 'always'.
+#     dict - user definition from r_pufky.srv.users.users_user_*.
 #
 # users_role_user:
 #   name: 'my_service_user'
 #   system: true
 #   uid: 999
 #   group: 'my_service_group'
+#   extensions:
+#     sudoers:
+#       name: 'example'
+#       nopassword: true
+#       commands: 'ALL'
 #
 # Reference:
+# * account_definitions.yml
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
 # * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
 users_role_user: {}
