@@ -11,10 +11,13 @@
 users_role_validate_date: '2024-06-23'
 users_role_validate_release: 'bookworm'
 
-# Default packages for users.
+###############################################################################
+# APT Packages
+###############################################################################
+
 users_role_packages:
-  - 'gnupg2'  # GPG
-  - 'acl'  # unprivileged user GPG (gnupg2) setup
+  - 'gnupg2'  # GPG.
+  - 'acl'  # unprivileged user GPG (gnupg2) setup.
 
 # High entropy packages.
 #
