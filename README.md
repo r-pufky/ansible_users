@@ -182,6 +182,25 @@ roles/my_custom_role/tasks/add_mandatory_users.yml
       gid: 800
 ```
 
+### Debian Bookworm Changes
+
+#### ssh group now _ssh
+ssh group migrated to **_ssh**. ssh group must be manually managed if used with
+users and groups, or migrate users to _ssh.
+
+https://salsa.debian.org/ssh-team/openssh/-/commit/18da782ebe789d0cf107a550e474ba6352e68911
+
+#### SSH pubkey authentication with locked passwords
+Locked accounts cannot SSH pubkey auth. SSH now distinguishes between `!` and
+`*` password locking:
+  *: lock password, allow SSH pubkey auth
+  !: lock password, deny SSH pubkey auth
+
+Any other means to lock the password will result in SSH pubkey failures. Do not
+enable `UsePam=yes` as this leads to security vulnerabilities.
+
+https://unix.stackexchange.com/questions/193066/how-to-unlock-account-for-public-key-ssh-authorization-but-not-for-password-aut
+
 ## Development
 Configure [environment](https://github.com/r-pufky/ansible_collection_srv/blob/main/docs/dev/environment/README.md)
 

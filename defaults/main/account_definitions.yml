@@ -9,8 +9,23 @@
 #
 # Generally group definitions should be available via group_vars.
 #
-# Bookworm migrated ssh-agent to use _ssh group instead of ssh. ssh group must
-# be manually managed if used with users and groups.
+# Debian Bookworm Changes:
+# * Uses _ssh group instead of ssh. ssh group must be manually managed if used
+#   with users and groups, or place users in _ssh.
+#
+#   Reference:
+#   * https://salsa.debian.org/ssh-team/openssh/-/commit/18da782ebe789d0cf107a550e474ba6352e68911
+#
+# * Locked accounts cannot SSH pubkey auth. SSH now distinguishes between '!'
+#   and '*' password locking:
+#     *: lock password, allow SSH pubkey auth
+#     !: lock password, deny SSH pubkey auth
+#
+#   Any other means to lock the password will result in SSH pubkey failures.
+#   Do not enable UsePam=yes as this leads to security vulnerabilities.
+#
+#   Reference:
+#   * https://unix.stackexchange.com/questions/193066/how-to-unlock-account-for-public-key-ssh-authorization-but-not-for-password-aut
 #
 # users_group_{LABEL}:
 #     dict - group definition from ansible.builtin.group. Use {LABEL} to
@@ -115,8 +130,8 @@
 #           Debian: 'apt install whois'
 #           Manjaro: 'pacman -Syu whois'
 #       Values:
-#         !: disabled/locked password
-#         *: disabled/locked password
+#         *: lock password, allow SSH pubkey auth
+#         !: lock password, deny SSH pubkey auth
 #       Default: '!'.
 #   password_expire_max: int - max number of days between password change
 #       Default: omit (disabled).
@@ -125,6 +140,9 @@
 #   password_expire_warn: int - number of days of warning before expiry
 #       Default: omit (disabled).
 #   password_lock: bool - lock the password, does not disable the user
+#       Values:
+#          True: locks password (!), prevents SSH pubkey login
+#         false: allows SSH pubkey login (default)
 #       Default: False.
 #   profile: str - set user profile (illumos/solaris)
 #       Default: omit (no profile).
@@ -255,13 +273,13 @@
 #   name: 'exampleuser'
 #   group: 'exampleuser'
 #   groups:
-#     - 'ssh'
+#     - '_ssh'
 #   uid: 701
 #   home: '/etc/ca'
 #   shell: '/bin/bash'
 #   create_home: true
 #   password: '{{ vault_example_user_password }}'
-#   password_lock: true
+#   password_lock: false
 #   update_password: 'always'
 #   expires: -1
 #   system: true
