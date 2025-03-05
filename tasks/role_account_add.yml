@@ -99,32 +99,62 @@
             mode: '0700'
             state: 'directory'
 
-        - name: 'Role account add | add authorized_key'
+        - name: 'User | add authorized keys'
           when: users_role_user.extensions.ssh.authorized_keys is defined
           ansible.posix.authorized_key:
             user: '{{ users_role_user.name }}'
-            key: '{{ users_role_user.extensions.ssh.authorized_keys }}'
-            exclusive: true
-            state: 'present'
+            key: '{{ item.key }}'
+            key_options: '{{ item.key_options | default(omit) }}'
+            manage_dir: '{{ item.manage_dir | default(true) }}'
+            path: '{{ item.path | default(omit) }}'
+            comment: '{{ item.comment | default(omit) }}'
+            exclusive: '{{ item.exclusive | default(false) }}'
+            follow: '{{ item.follow | default(false) }}'
+            validate_certs: '{{ item.validate_certs | default(true) }}'
+            state: '{{ item.state | default("present") }}'
+          loop: '{{ users_role_user.extensions.ssh.authorized_keys }}'
 
-        - name: 'Role account add | add SSH private key'
-          when: users_role_user.extensions.ssh.private_key is defined
-          ansible.builtin.copy:
-            dest: '{{ users_role_user.home }}/.ssh/{{ users_role_user.extensions.ssh.key_name | default("id_rsa") }}'
-            owner: '{{ users_role_user.name }}'
-            group: '{{ users_role_user.group }}'
-            mode: '0400'
-            content: '{{ users_role_user.extensions.ssh.private_key }}'
-            # no_log: true  # private key
+        # Keep inline instead of include_tasks loop for singular role import.
+        - name: 'User | manage SSH keys'
+          when: users_role_user.extensions.ssh.ssh_keys is defined
+          block:
+            - name: 'User | manage SSH keys | add private'
+              when: item.state | default("present") == 'present'
+              ansible.builtin.copy:
+                dest: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}'
+                owner: '{{ users_role_user.name }}'
+                group: '{{ users_role_user.group }}'
+                mode: '0400'
+                content: '{{ item.private }}'
+              loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
+              no_log: true  # private key
 
-        - name: 'Role account add | add SSH public key'
-          when: users_role_user.extensions.ssh.public_key is defined
-          ansible.builtin.copy:
-            dest: '{{ users_role_user.home }}/.ssh/{{ users_role_user.extensions.ssh.key_name | default("id_rsa") }}.pub'
-            owner: '{{ users_role_user.name }}'
-            group: '{{ users_role_user.group }}'
-            mode: '0400'
-            content: '{{ users_role_user.extensions.ssh.public_key }}'
+            - name: 'User | manage SSH keys | add public'
+              when: item.state | default("present") == 'present'
+              ansible.builtin.copy:
+                dest: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}.pub'
+                owner: '{{ users_role_user.name }}'
+                group: '{{ users_role_user.group }}'
+                mode: '0640'  # prevent file thrashing if lockdown is set.
+                content: '{{ item.public }}'
+              loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
+              no_log: true  # private key
+
+            - name: 'User | manage SSH keys | remove private'
+              when: item.state | default("present") == 'absent'
+              ansible.builtin.file:
+                path: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}'
+                state: 'absent'
+              loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
+              no_log: true  # private key
+
+            - name: 'User | manage SSH keys | remove public'
+              when: item.state | default("present") == 'absent'
+              ansible.builtin.file:
+                path: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}.pub'
+                state: 'absent'
+              loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
+              no_log: true  # private key
 
         - name: 'Role account add | set SSH config'
           when: users_role_user.extensions.ssh.config is defined

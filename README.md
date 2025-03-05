@@ -74,9 +74,12 @@ users_user_example:
       setenv: true
       validation: 'detect'
     ssh:
-      key_name: 'id_ed25519'
-      public_key: '{{ vault_example_ssh_public_key }}'
-      private_key: '{{ vault_example_ssh_private_key }}'
+      ssh_keys:
+        - name: 'id_ed25519'
+          public: '{{ vault_example_ssh_public_key }}'
+          private: '{{ vault_example_ssh_private_key }}'
+      authorized_keys:
+        - key: 'ssh-rsa AAAA...9Rm public_key@example'
       config: |
         # auto-accept new host keys
         Host *

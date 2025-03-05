@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 # Verify SSH extension works properly; apply to both user and role accounts to
 # verify no divergence between account types.
 dependency:
@@ -35,9 +36,25 @@ provisioner:
           extensions:
             include_group: true
             ssh:
-              key_name: 'id_ed25519'
-              public_key: 'ed25519 test key'
-              private_key: 'ed25519 test key'
+              ssh_keys:
+                - name: 'id_ed25519'
+                  public: 'ed25519 test key'
+                  private: 'ed25519 test key'
+                - name: 'id_dsa'
+                  public: 'dsa test key'
+                  private: 'dsa test key'
+              authorized_keys:
+                - key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMhBAfOHhGCFogTZ+ayHlpGB1UMUaz4+Xyvc/CfFg9RM test@example'
+                  key_options: 'no-port-forwarding,from="10.0.1.1"'
+                  manage_dir: true
+                  state: 'present'
+                  comment: 'test comment'
+                  exclusive: false
+                  follow: false
+                  validate_certs: true
+                - key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPYcyQE4poai5Kx1Isr5Okkt7i357tpaTWybMjS+oyG/ test@remove_key'
+                - key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPYcyQE4poai5Kx1Isr5Okkt7i357tpaTWybMjS+oyG/ test@remove_key'
+                  state: 'absent'
               config: |
                 # auto-accept new host keys
                 Host *
@@ -58,9 +75,25 @@ provisioner:
           extensions:
             include_group: true
             ssh:
-              key_name: 'id_rsa'
-              public_key: 'id_rsa conflict key overwrites'
-              private_key: 'id_rsa conflict key overwrites'
+              ssh_keys:
+                - name: 'id_rsa'
+                  public: 'id_rsa conflict key overwrites'
+                  private: 'id_rsa conflict key overwrites'
+                - name: 'id_dsa'
+                  public: 'key should be deleted'
+                  state: 'absent'
+              authorized_keys:
+                - key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMhBAfOHhGCFogTZ+ayHlpGB1UMUaz4+Xyvc/CfFg9RM test@example'
+                  key_options: 'no-port-forwarding,from="10.0.1.1"'
+                  manage_dir: true
+                  state: 'present'
+                  comment: 'test comment'
+                  exclusive: false
+                  follow: false
+                  validate_certs: true
+                - key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPYcyQE4poai5Kx1Isr5Okkt7i357tpaTWybMjS+oyG/ test@remove_key'
+                - key: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPYcyQE4poai5Kx1Isr5Okkt7i357tpaTWybMjS+oyG/ test@remove_key'
+                  state: 'absent'
               config: |
                 # auto-accept new host keys
                 Host *

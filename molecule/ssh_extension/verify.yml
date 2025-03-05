@@ -25,7 +25,27 @@
           - _test_users_ssh_private.stat.exists
           - _test_users_ssh_public.stat.exists
           - _test_users_ssh_config.stat.exists
-        fail_msg: 'ssh_extension extended SSH NOT created (expected .ssh/id_ed25519*, config).'
+        fail_msg: >
+          ssh_extension extended SSH NOT created (expected .ssh/id_ed25519*,
+          config, authorized_keys).
+
+    - name: User SSH extension | verify | SSH extension no conflicts | query authorized_keys'
+      ansible.builtin.file:
+        path: '/home/ssh_extension/.ssh/authorized_keys'
+        owner: 'ssh_extension'
+        group: 'ssh_extension'
+        mode: '0600'
+      check_mode: true
+      diff: true
+      register: _test_users_ssh_authorized_keys
+
+    - name: 'User SSH extension | verify | SSH extension no conflicts | assert authorized_keys'
+      ansible.builtin.assert:
+        that:
+          - not _test_users_ssh_authorized_keys.changed
+        fail_msg: >
+          /home/ssh_extension/.ssh/authorized_keys not in expected format
+          ({{ _test_users_ssh_authorized_keys.diff }}).
 
 - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites)'
   hosts: 'all'
@@ -46,10 +66,18 @@
         path: '/home/ssh_extension_conflict/.ssh/config'
       register: _test_users_ssh_config
 
+    - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites) | query ssh dsa key'
+      ansible.builtin.stat:
+        path: '/home/ssh_extension_conflict/.ssh/id_dsa'
+      register: _test_users_ssh_id_dsa
+
     - name: 'User SSH extension | verify | SSH extension conflicts (SSH extension overwrites) | assert extended ssh configuration correct'
       ansible.builtin.assert:
         that:
           - _test_users_ssh_private.content | b64decode == 'id_rsa conflict key overwrites'
           - _test_users_ssh_public.content | b64decode == 'id_rsa conflict key overwrites'
           - _test_users_ssh_config.stat.exists
-        fail_msg: 'ssh_extension_conflict keys invalid (expected .ssh/id_rsa* overwritten by extension ssh).'
+          - not _test_users_ssh_id_dsa.stat.exists
+        fail_msg: >
+          ssh_extension_conflict keys invalid (expected .ssh/id_rsa*
+          overwritten by extension ssh, id_dsa* deleted).

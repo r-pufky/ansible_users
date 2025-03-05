@@ -192,13 +192,44 @@
 #     ssh:
 #         dict - SSH extended options. User's home, name, and group must be
 #                defined to use these options (above). This will overwrite SSH
-#                options (above) if the same key name is used.
-#       key_name: str - key filename
-#           Default: 'id_rsa'
-#       public_key: str - public SSH key (~/.ssh/{key_name})
-#       private_key: str - private SSH key (~/.ssh/{key_name}.pub)
-#       authorized_keys: str - SSH authorized keys (~/.ssh/authorized_keys)
-#       config: str - formatted SSH config file options (~/.ssh/config)
+#                options (above) if the same key name is used. All options are
+#                written to ~/.ssh with correct permissions.
+#       ssh_keys: list of dict - SSH keypairs to manage for user.
+#         - name: str - key filename
+#               Default: 'id_rsa'.
+#           state: str - state.
+#               Default: 'present'.
+#           private: str - private key ({name}).
+#           public: str - public key ({name}.pub).
+#       authorized_keys: list of dict - authorized keys definition from
+#            ansible.posix.authorized_key.
+#         - key: str - SSH public key or URL to key.
+#           key_options: str - authorization options.
+#
+#               Reference:
+#               * https://manpages.debian.org/experimental/openssh-server/authorized_keys.5.en.html
+#           manage_dir: bool - manage directory of authorization file.
+#               Values:
+#                  True: create directory and set permissions (default).
+#                 False: do not manage directory (use with path).
+#               Default: True.
+#           path: str - alternative path to authorized_keys file. Set
+#                 manage_dir=false if using this option.
+#               Default: omit (use $HOME/.ssh/authorized_keys).
+#           state: str - state.
+#               Default: 'present'.
+#           comment: str - user key identification string.
+#               Default: omit (use key comment).
+#           exclusive: bool - remove all non-specified keys from file?
+#               Special Case:
+#                 * Applied for every item (all keys overwritten except last).
+#               Default: False.
+#           follow: bool - follow path symlink instead of replacing it.
+#               Default: False.
+#           validate_certs: bool - validate URL before saving key. Only applied
+#                 when key=URL.
+#               Default: True.
+#       config: str - formatted SSH config file options (config).
 #     sudoers:
 #         dict - sudo definition from ansible.builtin.sudoers. Use {LABEL} to
 #                reference the group definition in applying users/groups.
@@ -286,10 +317,12 @@
 #   state: 'present'
 #   extensions:
 #     ssh:
-#       key_name: 'id_ed25519'
-#       public_key: '{{ vault_exampleuser_public_key }}'
-#       private_key: '{{ vault_exampleuser_private_key }}'
-#       authorized_keys: '{{ vault_exampleuser_authorized_keys }}'
+#       keys:
+#         - name: 'id_ed25519'
+#           public: '{{ vault_exampleuser_public_key }}'
+#           private: '{{ vault_exampleuser_private_key }}'
+#       authorized_keys:
+#         - key: '{{ vault_exampleuser_authorized_keys }}'
 #       config: |
 #         # auto-accept new host keys
 #         Host *
