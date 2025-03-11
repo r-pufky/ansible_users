@@ -111,8 +111,8 @@
 #   home: str - user home directory
 #         Must be defined to use extended SSH options.
 #       Special Case:
-#         '/nonexistent': debian canonical non-existent home directory
-#                   omit: created in /home/{USER} if enabled
+#         /nonexistent: debian canonical non-existent home directory.
+#                 omit: created in /home/{USER} if enabled.
 #       Default: omit (system default).
 #   local: bool - force use of local command alternatives
 #       Default: False.
@@ -154,7 +154,7 @@
 #       Default: omit (not set).
 #   shell: str - user shell
 #       Special Case:
-#         '/usr/sbin/nologin': no login
+#         /usr/sbin/nologin: No login.
 #       Default: '/bin/bash'.
 #   skeleton: str - set a home skeleton directory
 #       Default: omit (system default).
