@@ -75,7 +75,7 @@
   ansible.builtin.include_tasks: 'gnupg_import.yml'
   loop: '{{ _users.extensions.gpg.gpg_keys }}'
   loop_control:
-    loop_var: key
+    loop_var: 'key'
   no_log: true  # private keys
 
 - name: 'Gnupg | set key trust'
