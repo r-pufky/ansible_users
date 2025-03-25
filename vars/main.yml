@@ -3,7 +3,6 @@
 ###############################################################################
 # User Role Options
 ###############################################################################
-#
 # Reference:
 # * https://docs.ansible.com/ansible/latest/user_guide/become.html#risks-of-becoming-an-unprivileged-user
 
