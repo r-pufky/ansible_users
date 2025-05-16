@@ -19,6 +19,7 @@
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
 # * https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#dynamic-variables
 # * https://github.com/ansible/ansible/issues/44261
+# yamllint enable rule:line-length
 
 - name: 'Group | create group {{ _users_group.name }}'
   when: _users_group is defined and _users_group | length > 0
@@ -31,4 +32,7 @@
     state: 'present'
     system: '{{ _users_group.system | default(false) }}'
   vars:
-    _users_group: '{{ hostvars[inventory_hostname]["users_group_" ~ group] | default({}) }}'
+    _users_group: '{{
+        hostvars[inventory_hostname]["users_group_" ~ group] |
+        default({})
+      }}'

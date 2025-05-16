@@ -52,10 +52,14 @@
 # * https://security.stackexchange.com/questions/129474/how-to-raise-a-key-to-ultimate-trust-on-another-machine
 # * https://blog.tersmitten.nl/how-to-ultimately-trust-a-public-key-non-interactively.html
 # * https://docs.ansible.com/ansible/latest/user_guide/become.html#risks-of-becoming-an-unprivileged-user
+# yamllint enable rule:line-length
 
 # --export-ownertrust will show all current keys, fingerprints, trust levels.
 - name: 'Gnupg import | verify key not installed'
-  ansible.builtin.command: 'gpg --export-ownertrust'
+  ansible.builtin.command:
+    argv:
+      - 'gpg'
+      - '--export-ownertrust'
   changed_when: false
   become: true
   become_user: '{{ _users.name }}'
@@ -103,7 +107,11 @@
         mode: '0400'
 
     - name: 'Gnupg import | public key {{ key.fingerprint }}'
-      ansible.builtin.command: 'gpg --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
+      ansible.builtin.command:
+        argv:
+          - 'gpg'
+          - '--import'
+          - '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.pub.asc'
       register: _users_gpg_public_import
       changed_when: _users_gpg_public_import.rc == 0
       failed_when: _users_gpg_public_import.rc > 1
@@ -112,7 +120,11 @@
 
     - name: 'Gnupg import | private key {{ key.fingerprint }}'
       when: key.private_key is defined and not key.password is defined
-      ansible.builtin.command: 'gpg --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
+      ansible.builtin.command:
+        argv:
+          - 'gpg'
+          - '--import'
+          - '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
       register: _users_gpg_private_import
       changed_when: _users_gpg_public_import.rc == 0
       failed_when: _users_gpg_private_import.rc > 1
@@ -121,7 +133,13 @@
 
     - name: 'Gnupg import | private key (with password) {{ key.fingerprint }}'
       when: key.private_key is defined and key.password is defined
-      ansible.builtin.command: 'gpg --passphrase {{ key.password }} --import {{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
+      ansible.builtin.command:
+        argv:
+          - 'gpg'
+          - '--passphrase'
+          - '{{ key.password }}'
+          - '--import'
+          - '{{ _users.home }}/.gnupg/{{ key.fingerprint }}.key.asc'
       register: _users_gpg_private_import
       changed_when: _users_gpg_public_import.rc == 0
       failed_when: _users_gpg_private_import.rc > 1

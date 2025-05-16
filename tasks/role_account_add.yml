@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Add User/Group for Role
 ###############################################################################
@@ -11,29 +10,36 @@
 
 - name: 'Role account add | install packages'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.apt'
+    name: 'r_pufky.deb.apt'
   vars:
     apt_packages:
       - '{{ users_role_packages }}'
-      - '{{ users_role_high_entropy_packages if users_high_entropy_enable else [] }}'
+      - '{{
+          users_role_high_entropy_packages
+          if users_high_entropy_enable else
+          []
+        }}'
       - '{{ users_role_ssh_keygen_packages }}'
     apt_package_update_cache: true
 
-- name: 'Role account add | query user {{ users_role_user.name | default("") }}'
+- name:
+    'Role account add | query user {{ users_role_user.name | default("") }}'
   when: users_role_create_user
   ansible.builtin.command: 'id {{ users_role_user.name }}'
   register: users_role_user_role_user_exists
   changed_when: users_role_user_role_user_exists.rc > 0
   failed_when: false
 
-- name: 'Role account add | query group {{ users_role_group.name | default("") }}'
+- name:
+    'Role account add | query group {{ users_role_group.name | default("") }}'
   when: users_role_create_group
   ansible.builtin.command: 'groups {{ users_role_group.name }}'
   register: users_role_user_role_group_exists
   changed_when: users_role_user_role_group_exists.rc > 0
   failed_when: false
 
-- name: 'Role account add | create group {{ users_role_group.name | default("") }}'
+- name:
+    'Role account add | create group {{ users_role_group.name | default("") }}'
   when: users_role_create_group and users_role_user_role_group_exists.rc != 0
   ansible.builtin.group:
     force: '{{ users_role_group.force | default(false) }}'
@@ -44,9 +50,12 @@
     state: 'present'
     system: '{{ users_role_group.system | default(false) }}'
 
-- name: 'Role account add | create user {{ users_role_user.name | default("") }} {{ users_role_user.comment | default("") }}'  # noqa name[template] readability
+- name: >
+    Role account add |
+    create user {{ users_role_user.name | default("") }}
+    {{ users_role_user.comment | default("") }}
   when: users_role_create_user and users_role_user_role_user_exists.rc != 0
-  ansible.builtin.user:
+  ansible.builtin.user:  # noqa name[template] readability
     append: '{{ users_role_user.append | default(false) }}'
     authorization: '{{ users_role_user.authorization | default(omit) }}'
     comment: '{{ users_role_user.comment | default(omit) }}'
@@ -64,9 +73,12 @@
     name: '{{ users_role_user.name }}'
     non_unique: '{{ users_role_user.non_unique | default(false) }}'
     password: '{{ users_role_user.password | default("!") }}'
-    password_expire_max: '{{ users_role_user.password_expire_max | default(omit) }}'
-    password_expire_min: '{{ users_role_user.password_expire_min | default(omit) }}'
-    password_expire_warn: '{{ users_role_user.password_expire_warn | default(omit) }}'
+    password_expire_max:
+      '{{ users_role_user.password_expire_max | default(omit) }}'
+    password_expire_min:
+      '{{ users_role_user.password_expire_min | default(omit) }}'
+    password_expire_warn:
+      '{{ users_role_user.password_expire_warn | default(omit) }}'
     password_lock: '{{ users_role_user.password_lock | default(false) }}'
     profile: '{{ users_role_user.profile | default(omit) }}'
     remove: '{{ users_role_user.remove | default(false) }}'
@@ -75,15 +87,23 @@
     shell: '{{ users_role_user.shell | default("/usr/sbin/nologin") }}'
     skeleton: '{{ users_role_user.skeleton | default(omit) }}'
     ssh_key_bits: '{{ users_role_user.ssh_key_bits | default(omit) }}'
-    ssh_key_comment: '{{ users_role_user.ssh_key_comment | default("ansible-generated") }}'
+    ssh_key_comment:
+      '{{ users_role_user.ssh_key_comment | default("ansible-generated") }}'
     ssh_key_file: '{{ users_role_user.ssh_key_file | default(".ssh/id_rsa") }}'
-    ssh_key_passphrase: '{{ users_role_user.ssh_key_passphrase | default(lookup("ansible.builtin.password", "/dev/null", chars=["ascii_letters", "digits"], length=32)) }}'
+    ssh_key_passphrase: '{{
+        users_role_user.ssh_key_passphrase |
+        default(lookup("ansible.builtin.password",
+                       "/dev/null",
+                       chars=["ascii_letters", "digits"],
+                       length=32))
+      }}'
     ssh_key_type: '{{ users_role_user.ssh_key_type | default("rsa") }}'
     state: 'present'
     system: '{{ users_role_user.system | default(false) }}'
     uid: '{{ users_role_user.uid | default(omit) }}'
     umask: '{{ users_role_user.umask | default(omit) }}'
-    update_password: '{{ users_role_user.update_password | default("always") }}'
+    update_password:
+      '{{ users_role_user.update_password | default("always") }}'
 
 - name: 'Role account add | process extensions'
   when: users_role_user.extensions is defined
@@ -121,7 +141,10 @@
             - name: 'User | manage SSH keys | add private'
               when: item.state | default("present") == 'present'
               ansible.builtin.copy:
-                dest: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}'
+                dest: '{{
+                    users_role_user.home ~ "/.ssh/" ~
+                    item.name | default("id_rsa")
+                  }}'
                 owner: '{{ users_role_user.name }}'
                 group: '{{ users_role_user.group }}'
                 mode: '0400'
@@ -132,7 +155,10 @@
             - name: 'User | manage SSH keys | add public'
               when: item.state | default("present") == 'present'
               ansible.builtin.copy:
-                dest: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}.pub'
+                dest: '{{
+                    users_role_user.home ~ "/.ssh/" ~
+                    item.name | default("id_rsa") ~ ".pub"
+                  }}'
                 owner: '{{ users_role_user.name }}'
                 group: '{{ users_role_user.group }}'
                 mode: '0640'  # prevent file thrashing if lockdown is set.
@@ -143,7 +169,10 @@
             - name: 'User | manage SSH keys | remove private'
               when: item.state | default("present") == 'absent'
               ansible.builtin.file:
-                path: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}'
+                path: '{{
+                    users_role_user.home ~ "/.ssh/" ~
+                    item.name | default("id_rsa")
+                  }}'
                 state: 'absent'
               loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
               no_log: true  # private key
@@ -151,7 +180,10 @@
             - name: 'User | manage SSH keys | remove public'
               when: item.state | default("present") == 'absent'
               ansible.builtin.file:
-                path: '{{ users_role_user.home }}/.ssh/{{ item.name | default("id_rsa") }}.pub'
+                path: '{{
+                    users_role_user.home ~ "/.ssh/" ~
+                    item.name | default("id_rsa") ~ ".pub"
+                  }}'
                 state: 'absent'
               loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
               no_log: true  # private key
@@ -170,27 +202,42 @@
     - name: 'Role account add | config sudoers'
       when: users_role_user.extensions.sudoers is defined
       community.general.sudoers:
-        commands: '{{ users_role_user.extensions.sudoers.commands | default(omit) }}'
+        commands:
+          '{{ users_role_user.extensions.sudoers.commands | default(omit) }}'
         group: '{{ users_role_user.extensions.sudoers.group | default(omit) }}'
         host: '{{ users_role_user.extensions.sudoers.host | default("ALL") }}'
         name: '{{ users_role_user.extensions.sudoers.name }}'
-        noexec: '{{ users_role_user.extensions.sudoers.noexec | default(false) }}'
-        nopassword: '{{ users_role_user.extensions.sudoers.nopassword | default(true) }}'
+        noexec:
+          '{{ users_role_user.extensions.sudoers.noexec | default(false) }}'
+        nopassword:
+          '{{ users_role_user.extensions.sudoers.nopassword | default(true) }}'
         runas: '{{ users_role_user.extensions.sudoers.runas | default(omit) }}'
-        setenv: '{{ users_role_user.extensions.sudoers.setenv | default(false) }}'
-        state: '{{ users_role_user.extensions.sudoers.state | default("present") }}'
-        sudoers_path: '{{ users_role_user.extensions.sudoers.sudoers_path | default("/etc/sudoers.d") }}'
+        setenv:
+          '{{ users_role_user.extensions.sudoers.setenv | default(false) }}'
+        state:
+          '{{ users_role_user.extensions.sudoers.state | default("present") }}'
+        sudoers_path: '{{
+            users_role_user.extensions.sudoers.sudoers_path |
+            default("/etc/sudoers.d")
+          }}'
         user: '{{ users_role_user.extensions.sudoers.user | default(omit) }}'
-        validation: '{{ users_role_user.extensions.sudoers.validation | default("detect") }}'
+        validation: '{{
+            users_role_user.extensions.sudoers.validation |
+            default("detect")
+          }}'
 
     - name: 'Role account add | configure gnupg'
-      when: users_role_user.extensions.gpg is defined and users_role_user.extensions.gpg | length > 0
+      when: >
+        users_role_user.extensions.gpg is defined and
+        users_role_user.extensions.gpg | length > 0
       ansible.builtin.include_tasks: 'gnupg.yml'
       vars:
         _users: '{{ users_role_user }}'
 
     - name: 'Role account add | copy user data'
-      when: users_role_user.extensions.copy_data is defined and users_role_user.extensions.copy_data
+      when: >
+        users_role_user.extensions.copy_data is defined and
+        users_role_user.extensions.copy_data
       ansible.builtin.copy:
         src: '{{ users_role_user.extensions.copy_data }}'
         dest: '{{ users_role_user.home }}'
@@ -201,6 +248,8 @@
         directory_mode: '0700'
 
     - name: 'Role account add | lockdown home'
-      when: users_role_user.extensions.lockdown is defined and users_role_user.extensions.lockdown
+      when: >
+        users_role_user.extensions.lockdown is defined and
+        users_role_user.extensions.lockdown
       ansible.builtin.command: 'chmod -R go-rwx {{ users_role_user.home }}'
       changed_when: false

@@ -5,14 +5,12 @@ consumption.
 ## Requirements
 [supported platforms](https://github.com/r-pufky/ansible_users/blob/main/meta/main.yml)
 
-[collections/roles](https://github.com/r-pufky/ansible_users/blob/main/meta/requirements.yml)
-
 ## Role Variables
 [defaults](https://github.com/r-pufky/ansible_users/tree/main/defaults/main/)
 
 ## Dependencies
-Part of the [r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv)
-collection.
+**galaxy-ng** roles cannot be used independently. Part of
+[r_pufky.deb](https://github.com/r-pufky/ansible_collection_deb) collection.
 
 ## Example Playbook
 Consume this role to easily create consistent complex users and groups across a
@@ -133,7 +131,7 @@ site.yml
   tasks:
   - name: 'manage users and groups'
     ansible.builtin.include_role:
-      name: 'r_pufky.srv.users'
+      name: 'r_pufky.deb.users'
 ```
 
 ### Explicit Definitions
@@ -147,7 +145,7 @@ playbook.yml
   tasks:
   - name: 'manage users and groups'
     ansible.builtin.include_role:
-      name: 'r_pufky.srv.users'
+      name: 'r_pufky.deb.users'
     vars:
       users_user_root:
         name: 'root'
@@ -172,7 +170,7 @@ roles/my_custom_role/tasks/add_mandatory_users.yml
 ``` yaml
 - name: 'add required service user/groups'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.users'
+    name: 'r_pufky.deb.users'
     tasks_from: 'role_account_add'
   vars:
     users_role_user:
@@ -205,7 +203,7 @@ enable `UsePam=yes` as this leads to security vulnerabilities.
 https://unix.stackexchange.com/questions/193066/how-to-unlock-account-for-public-key-ssh-authorization-but-not-for-password-aut
 
 ## Development
-Configure [environment](https://github.com/r-pufky/ansible_collection_srv/blob/main/docs/dev/environment/README.md)
+Configure [environment](https://github.com/r-pufky/ansible_collection_docs/blob/main/dev/environment/README.md)
 
 Run all unit tests:
 ``` bash

@@ -1,16 +1,20 @@
 ---
-# yamllint disable rule:line-length
-- name: 'User sudoers extension | verify | sudoers config'
+- name: 'User sudoers extension | verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'User sudoers extension | verify | sudoers config | query sudoers config'
+    - name:
+        'User sudoers extension | verify | /etc/sudoers.d/sudoers_extension'
       ansible.builtin.slurp:
         path: '/etc/sudoers.d/sudoers_extension'
       register: _test_users_sudoers_extension
 
-    - name: 'User sudoers extension | verify | sudoers config | assert sudoers configuration correct'
+    - name: >
+        User sudoers extension | verify | assert sudoers configuration correct
       ansible.builtin.assert:
+        quiet: true
         that:
-          - _test_users_sudoers_extension.content | b64decode == '%sudo ALL=(root)NOEXEC:SETENV: ALL'
-        fail_msg: 'sudoers_extension sudoers invalid (expected %sudo ALL=(root)NOEXEC:SETENV: ALL).'
+          - _test_users_sudoers_extension.content | b64decode == '%sudo ALL=(root)NOEXEC:SETENV: ALL'  # yamllint disable-line rule:line-length
+        fail_msg: >
+          ✘ sudoers_extension sudoers invalid
+          (expected %sudo ALL=(root)NOEXEC:SETENV: ALL).

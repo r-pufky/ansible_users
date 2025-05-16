@@ -30,7 +30,7 @@ users_role_create_user: true
 # Single group setting from (Group Definition).
 #
 # users_role_group:
-#     dict - group definition from r_pufky.srv.users.users_group_*.
+#     dict - group definition from r_pufky.deb.users.users_group_*.
 #
 # users_role_group:
 #   name: 'my_service_group'
@@ -48,7 +48,7 @@ users_role_group: {}
 # Single user setting from (User Definition).
 #
 # users_role_user:
-#     dict - user definition from r_pufky.srv.users.users_user_*.
+#     dict - user definition from r_pufky.deb.users.users_user_*.
 #
 # users_role_user:
 #   name: 'my_service_user'

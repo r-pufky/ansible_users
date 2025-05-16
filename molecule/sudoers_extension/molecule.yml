@@ -1,6 +1,13 @@
 ---
+###############################################################################
+# Sudoers Extension
+###############################################################################
 # Verify sudoers extensions works properly; apply to both user and role
 # accounts to verify no divergence between account types.
+#
+# Tests:
+# * User is granted '%sudo ALL=(root)NOEXEC:SETENV: ALL'.
+
 dependency:
   name: 'galaxy'
 driver:

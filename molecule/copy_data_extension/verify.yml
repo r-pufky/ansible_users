@@ -1,19 +1,18 @@
 ---
-# yamllint disable rule:line-length
-- name: 'User copy data extension | verify | user copy data'
+- name: 'User copy data extension | verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'User copy data extension | verify | user copy data | query copied user data'
-      ansible.builtin.stat:
-        path: '/home/user_copy_data/copy_data/user_files_test'
-      register: _test_users_copy
-
-    - name: 'User copy data extension | verify | user copy data | assert copied user data'
-      ansible.builtin.assert:
-        that:
-          - _test_users_copy.stat.exists
-          - _test_users_copy.stat.gr_name == 'user_copy_data'
-          - _test_users_copy.stat.pw_name == 'user_copy_data'
-          - _test_users_copy.stat.mode == '0600'
-        fail_msg: 'user_copy_data user data NOT copied correctly.'
+    - name: 'User copy data extension | verify'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'file.yml'
+      vars:
+        test_name: >
+          User copy data extension | verify |
+          /home/user_copy_data/copy_data/user_files_test
+        test_file: '/home/user_copy_data/copy_data/user_files_test'
+        test_owner: 'user_copy_data'
+        test_group: 'user_copy_data'
+        test_mode: '0600'
+        test_state: 'file'

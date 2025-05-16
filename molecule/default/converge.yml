@@ -3,6 +3,6 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | converge | apply r_pufky.srv.users'
+    - name: 'Default | converge | apply r_pufky.deb.users'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'

@@ -1,7 +1,17 @@
 ---
 # yamllint disable rule:line-length
+###############################################################################
+# Role Account Add
+###############################################################################
 # Verify SSH extension works properly; apply to both user and role accounts to
 # verify no divergence between account types.
+#
+# Tests:
+# * Existing keys are not overwritten ~/.ssh/{id_ed25519, id_ed25519.pub,
+#   config, authorized_keys}.
+# * Force overwritten keys ~/.ssh/{id_rsa, id_rsa.pub, config, id_dsa} are
+#   overwritten.
+
 dependency:
   name: 'galaxy'
 driver:

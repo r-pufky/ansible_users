@@ -1,5 +1,6 @@
 ---
 galaxy_info:
+  role_name: 'users'
   author: 'r_pufky'
   description: 'User management.'
   company: 'N/A'

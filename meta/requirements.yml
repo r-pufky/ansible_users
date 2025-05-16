@@ -1,8 +1,0 @@
----
-# yamllint disable rule:line-length
-collections:
-  - name: 'community.general.sudoers'  # https://docs.ansible.com/ansible/latest/collections/community/general/sudoers_module.html
-  - name: 'ansible.posix.authorized_keys'  # https://docs.ansible.com/ansible/latest/collections/ansible/posix/authorized_key_module.html
-
-roles:
-  - name: 'r_pufky.srv.apt'  # https://github.com/r-pufky/ansible_collection_srv

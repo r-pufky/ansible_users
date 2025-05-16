@@ -3,26 +3,26 @@
   hosts: 'user-debian-12-ssh_extension-user'
   gather_facts: false
   tasks:
-    - name: 'User SSH extension | converge | apply r_pufky.srv.users (user)'
+    - name: 'User SSH extension | converge | apply r_pufky.deb.users (user)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
 
 - name: 'User SSH extension | converge'
   hosts: 'user-debian-12-ssh_extension-role'
   gather_facts: false
   tasks:
-    - name: 'User SSH extension | converge | apply r_pufky.srv.users (role)'
+    - name: 'User SSH extension | converge | apply r_pufky.deb.users (role)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add.yml'
 
 - name: 'User SSH extension | converge'
   hosts: 'user-debian-12-ssh_extension-role'
   gather_facts: false
   tasks:
-    - name: 'User SSH extension | converge | apply r_pufky.srv.users (role)'
+    - name: 'User SSH extension | converge | apply r_pufky.deb.users (role)'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add.yml'
       vars:
         users_role_group: '{{ users_group_ssh_extension_conflict }}'

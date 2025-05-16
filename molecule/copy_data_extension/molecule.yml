@@ -1,6 +1,13 @@
 ---
+###############################################################################
+# Copy Data Extension
+###############################################################################
 # Verify copy_data extension works properly; apply to both user and role
 # accounts to verify no divergence between account types.
+#
+# Tests:
+# * User data is copied correctly.
+
 dependency:
   name: 'galaxy'
 driver:

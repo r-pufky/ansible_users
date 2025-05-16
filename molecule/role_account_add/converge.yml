@@ -1,30 +1,35 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Role account add | converge'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Role account add | converge | aply r_pufky.srv.users (user default values)'
+    - name: >
+        Role account add | converge |
+        apply r_pufky.deb.users (user default values)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_group: false
         users_role_user:
           name: 'user_all_defaults_valid'
 
-    - name: 'Role account add | converge | apply r_pufky.srv.user (group default values)'
+    - name: >
+        Role account add | converge |
+        apply r_pufky.deb.users (group default values)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_user: false
         users_role_group:
           name: 'group_all_defaults_valid'
 
-    - name: 'Role account add | converge | apply r_pufky.srv.user (group ALL values)'
+    - name: >
+        Role account add | converge |
+        apply r_pufky.deb.users (group ALL values)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_user: false
@@ -36,9 +41,11 @@
           non_unique: false
           system: true
 
-    - name: 'Role account add | converge | apply r_pufky.srv.users (user ALL values)'
+    - name: >
+        Role account add | converge |
+        apply r_pufky.deb.users (user ALL values)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_create_group: false
@@ -79,9 +86,11 @@
           umask: '0277'
           update_password: 'always'
 
-    - name: 'Role account add | converge | apply r_pufky.srv.users (user/group simultaneously)'
+    - name: >
+        Role account add | converge |
+        apply r_pufky.deb.users (user/group simultaneously)
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.users'
+        name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
       vars:
         users_role_user:

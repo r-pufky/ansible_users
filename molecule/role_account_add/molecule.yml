@@ -1,7 +1,16 @@
 ---
+###############################################################################
+# Role Account Add
+###############################################################################
 # As these are encapsulated ansible tasks just ensure that sending all options
 # successfully executes, as well as toggling user and group options, and
 # minimum configuration (excluding auto UID/GID for idempotent testing).
+#
+# Tests:
+# * Role account is added correctly.
+# * All user, group options.
+# * Simultaneously adding user, group.
+
 dependency:
   name: 'galaxy'
 driver:

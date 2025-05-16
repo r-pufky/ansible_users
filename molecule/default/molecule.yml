@@ -1,7 +1,22 @@
 ---
+###############################################################################
+# Default
+###############################################################################
 # As these are encapsulated ansible tasks just ensure that sending all options
 # successfully executes, as well as toggling user and group options, and
 # minimum configuration (excluding auto UID/GID for more idempotent testing).
+#
+# Tests:
+# * Role executes without error with all options enabled.
+# * Minimum group specifications are enforced.
+# * Minimum user specifications are enforced.
+# * All group options with no syntax errors.
+# * All user options with no syntax errors.
+# * User with include_group option works.
+# * User lockdown works.
+# * Alternate user (same user, different settings) works.
+# * High-entropy packages are installed.
+
 dependency:
   name: 'galaxy'
 driver:

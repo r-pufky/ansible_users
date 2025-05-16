@@ -1,7 +1,15 @@
 ---
 # yamllint disable rule:line-length
+###############################################################################
+# GPG Extension
+###############################################################################
 # Verify GPG extension works properly; apply to both user and role accounts to
 # verify no divergence between account types.
+#
+# Tests:
+# * gpg.conf exists.
+# * Imported GPG keys are trusted at the correct level.
+
 dependency:
   name: 'galaxy'
 driver:

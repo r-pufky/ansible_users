@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 ###############################################################################
 # Manage User GnuPG
 ###############################################################################
@@ -41,8 +40,8 @@
 # * https://wiki.archlinux.org/title/GnuPG
 # * https://www.gnupg.org/documentation/manuals/gnupg/GPG-Esoteric-Options.html
 
-- name: 'Gnupg | create {{ _users.home }}/.gnupg'  # noqa name[template] directory structure
-  ansible.builtin.file:
+- name: 'Gnupg | create {{ _users.home }}/.gnupg'
+  ansible.builtin.file:  # noqa name[template] directory structure
     dest: '{{ _users.home }}/.gnupg'
     owner: '{{ _users.name }}'
     group: '{{ _users.name }}'
@@ -58,7 +57,10 @@
     mode: '0600'
 
 - name: 'Gnupg | warm up GPG DB cache'
-  ansible.builtin.command: 'gpg --list-keys'
+  ansible.builtin.command:
+    argv:
+      - 'gpg'
+      - '--list-keys'
   changed_when: false
   become: true
   become_user: '{{ _users.name }}'
@@ -79,7 +81,11 @@
   no_log: true  # private keys
 
 - name: 'Gnupg | set key trust'
-  ansible.builtin.command: 'gpg --import-ownertrust {{ _users.home }}/.gnupg/trust.list'
+  ansible.builtin.command:
+    argv:
+      - 'gpg'
+      - '--import-ownertrust'
+      - '{{ _users.home }}/.gnupg/trust.list'
   changed_when: false
   become: true
   become_user: '{{ _users.name }}'
