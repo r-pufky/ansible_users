@@ -1,18 +1,17 @@
 ---
-- name: 'User copy data extension | verify'
+- name: 'Verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'User copy data extension | verify'
+    - name: 'Verify | /home/user_copy_data/copy_data/user_files_test'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
-        test_name: >
-          User copy data extension | verify |
-          /home/user_copy_data/copy_data/user_files_test
+        test_name: 'Verify | /home/user_copy_data/copy_data/user_files_test'
         test_file: '/home/user_copy_data/copy_data/user_files_test'
         test_owner: 'user_copy_data'
         test_group: 'user_copy_data'
         test_mode: '0600'
         test_state: 'file'
+        test_diff: true

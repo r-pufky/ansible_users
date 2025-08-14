@@ -1,17 +1,17 @@
 ---
-- name: 'User GPG extension | converge'
+- name: 'Converge'
   hosts: 'users-debian-12-gpg_extension-user'
   gather_facts: false
   tasks:
-    - name: 'User GPG extension | converge | apply r_pufky.deb.users (user)'
+    - name: 'Converge | apply r_pufky.deb.users (user)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
 
-- name: 'User GPG extension | converge'
+- name: 'Converge'
   hosts: 'users-debian-12-gpg_extension-role'
   gather_facts: false
   tasks:
-    - name: 'User GPG extension | converge | apply r_pufky.deb.users (role)'
+    - name: 'Converge | apply r_pufky.deb.users (role)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add.yml'

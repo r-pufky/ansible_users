@@ -1,11 +1,9 @@
 ---
-- name: 'Role account add | converge'
+- name: 'Converge'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Role account add | converge |
-        apply r_pufky.deb.users (user default values)
+    - name: 'Converge | apply r_pufky.deb.users (user default values)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
@@ -14,9 +12,7 @@
         users_role_user:
           name: 'user_all_defaults_valid'
 
-    - name: >
-        Role account add | converge |
-        apply r_pufky.deb.users (group default values)
+    - name: 'Converge | apply r_pufky.deb.users (group default values)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
@@ -25,9 +21,7 @@
         users_role_group:
           name: 'group_all_defaults_valid'
 
-    - name: >
-        Role account add | converge |
-        apply r_pufky.deb.users (group ALL values)
+    - name: 'Converge | apply r_pufky.deb.users (group ALL values)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
@@ -41,9 +35,7 @@
           non_unique: false
           system: true
 
-    - name: >
-        Role account add | converge |
-        apply r_pufky.deb.users (user ALL values)
+    - name: 'Converge | apply r_pufky.deb.users (user ALL values)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'
@@ -86,9 +78,7 @@
           umask: '0277'
           update_password: 'always'
 
-    - name: >
-        Role account add | converge |
-        apply r_pufky.deb.users (user/group simultaneously)
+    - name: 'Converge | apply r_pufky.deb.users (user/group simultaneously)'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
         tasks_from: 'role_account_add'

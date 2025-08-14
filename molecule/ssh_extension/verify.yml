@@ -1,21 +1,22 @@
 ---
-- name: 'User SSH extension | verify | SSH extension no conflicts'
+- name: 'Verify | SSH extension no conflicts'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'User SSH extension | verify | SSH extension no conflicts'
+    - name: 'Verify | SSH extension no conflicts'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
         test_name: >
-          User SSH extension | verify | SSH extension no conflicts |
+          Verify | SSH extension no conflicts |
           /home/ssh_extension/.ssh/{{ item.file }}
         test_file: '/home/ssh_extension/.ssh/{{ item.file }}'
         test_owner: '0800'
         test_group: '0800'
         test_mode: '{{ item.mode }}'
         test_state: 'file'
+        test_diff: true
       loop:
         - {file: 'id_ed25519', mode: '0400'}
         - {file: 'id_ed25519.pub', mode: '0640'}
@@ -24,21 +25,17 @@
       loop_control:
         label: '{{ item.file }}'
 
-- name: >
-    User SSH extension | verify |
-    SSH extension conflicts (SSH extension overwrites)
+- name: 'Verify | SSH extension conflicts (SSH extension overwrites)'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        User SSH extension | verify |
-        SSH extension conflicts (SSH extension overwrites)
+    - name: 'Verify | SSH extension conflicts (SSH extension overwrites)'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
         test_name: >
-          User SSH extension | verify |
+          Verify |
           SSH extension conflicts (SSH extension overwrites) |
           /home/ssh_extension_conflict/.ssh/config
         test_file: '/home/ssh_extension_conflict/.ssh/config'
@@ -46,16 +43,15 @@
         test_group: '0810'
         test_mode: '0400'
         test_state: 'file'
+        test_diff: true
 
-    - name: >
-        User SSH extension | verify |
-        SSH extension conflicts (SSH extension overwrites)
+    - name: 'Verify | SSH extension conflicts (SSH extension overwrites)'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
         test_name: >
-          User SSH extension | verify |
+          Verify |
           SSH extension conflicts (SSH extension overwrites) |
           /home/ssh_extension_conflict/.ssh/id_dsa
         test_file: '/home/ssh_extension_conflict/.ssh/id_dsa'
@@ -63,9 +59,10 @@
         test_group: '{{ omit }}'
         test_mode: '{{ omit }}'
         test_state: 'absent'
+        test_diff: true
 
     - name: >
-        User SSH extension | verify |
+        Verify |
         SSH extension conflicts (SSH extension overwrites) |
         /home/ssh_extension_conflict/.ssh/id_rsa
       ansible.builtin.slurp:
@@ -73,7 +70,7 @@
       register: _test_users_ssh_private
 
     - name: >
-        User SSH extension | verify |
+        Verify |
         SSH extension conflicts (SSH extension overwrites) |
         /home/ssh_extension_conflict/.ssh/id_rsa.pub
       ansible.builtin.slurp:
@@ -81,7 +78,7 @@
       register: _test_users_ssh_public
 
     - name: >
-        User SSH extension | verify |
+        Verify |
         SSH extension conflicts (SSH extension overwrites) |
         assert extended ssh configuration correct
       ansible.builtin.assert:

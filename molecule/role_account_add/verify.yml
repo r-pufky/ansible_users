@@ -1,17 +1,15 @@
 ---
-- name: 'Role account add | verify | user/group defaults'
+- name: 'Verify | user/group defaults'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Role account add | verify | user/group defaults |
-        query user_all_defaults_valid
+    - name: 'Verify | user/group defaults | query user_all_defaults_valid'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_all_defaults_valid'
 
     - name: >
-        Role account add | verify | user/group defaults |
+        Verify | user/group defaults |
         assert user user_all_defaults_valid
       ansible.builtin.assert:
         quiet: true
@@ -24,15 +22,13 @@
         success_msg: 'user_all_defaults_valid correct.'
         fail_msg: '✘ user_all_defaults_valid incorrect passwd values.'
 
-    - name: >
-        Role account add | verify | user/group defaults |
-        query group_all_defaults_valid
+    - name: 'Verify | user/group defaults | query group_all_defaults_valid'
       ansible.builtin.getent:
         database: 'group'
         key: 'group_all_defaults_valid'
 
     - name: >
-        Role account add | verify | user/group defaults |
+        Verify | user/group defaults |
         assert group group_all_defaults_valid
       ansible.builtin.assert:
         quiet: true
@@ -42,19 +38,17 @@
         success_msg: 'group_all_defaults_valid correct.'
         fail_msg: '✘ group_all_defaults_valid incorrect passwd values.'
 
-- name: 'Role account add | verify | user/group all values'
+- name: 'Verify | user/group all values'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Role account add | verify | user/group all values |
-        query group_all_specified_values
+    - name: 'Verify | user/group all values | query group_all_specified_values'
       ansible.builtin.getent:
         database: 'group'
         key: 'group_all_specified_values'
 
     - name: >
-        Role account add | verify | user/group all values |
+        Verify | user/group all values |
         assert group group_all_specified_values
       ansible.builtin.assert:
         quiet: true
@@ -64,15 +58,13 @@
         success_msg: 'group_all_specified_values correct.'
         fail_msg: '✘ group_all_specified_values incorrect passwd values.'
 
-    - name: >
-        Role account add | verify | user/group all values |
-        query user_all_specified_values
+    - name: 'Verify | user/group all values | query user_all_specified_values'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_all_specified_values'
 
     - name: >
-        Role account add | verify | user/group all values |
+        Verify | user/group all values |
         assert user user_all_specified_values
       ansible.builtin.assert:
         quiet: true
@@ -86,27 +78,21 @@
         success_msg: 'user_all_specified_values correct.'
         fail_msg: '✘ user_all_specified_values incorrect passwd values.'
 
-- name: 'Role account add | verify | simultaneous user/group'
+- name: 'Verify | simultaneous user/group'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Role account add | verify | simultaneous user/group |
-        query user_simul_user
+    - name: 'Verify | simultaneous user/group | query user_simul_user'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_simul_user'
 
-    - name: >
-        Role account add | verify | simultaneous user/group |
-        query user_simul_group
+    - name: 'Verify | simultaneous user/group | query user_simul_group'
       ansible.builtin.getent:
         database: 'group'
         key: 'user_simul_group'
 
-    - name: >
-        Role account add | verify | simultaneous user/group |
-        assert group user_simul_group
+    - name: 'Verify | simultaneous user/group | assert group user_simul_group'
       ansible.builtin.assert:
         quiet: true
         that:
@@ -115,9 +101,7 @@
         success_msg: 'user_simul_group correct.'
         fail_msg: '✘ user_simul_group incorrect passwd values.'
 
-    - name: >
-        Role account add | verify | simultaneous user/group |
-        assert user user_simul_user
+    - name: 'Verify | simultaneous user/group | assert user user_simul_user'
       ansible.builtin.assert:
         quiet: true
         that:

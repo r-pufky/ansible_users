@@ -1,17 +1,17 @@
 ---
-- name: 'Default | verify | minimum group specification'
+- name: 'Verify | minimum group specification'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name: >
-        Default | verify | minimum group specification |
+        Verify | minimum group specification |
         query group minimum_group_options
       ansible.builtin.getent:
         database: 'group'
         key: 'minimum_group_options'
 
     - name: >
-        Default | verify | minimum group specification |
+        Verify | minimum group specification |
         assert group minimum_group_options
       ansible.builtin.assert:
         quiet: true
@@ -20,19 +20,18 @@
           - ansible_facts.getent_group.minimum_group_options[1] == '800'
         fail_msg: '✘ minimum_group_options does not exist or not gid=800.'
 
-- name: 'Default | verify | minimum user specification'
+- name: 'Verify | minimum user specification'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Default | verify | minimum user specification |
-        query user minimum_user_options
+    - name:
+        'Verify | minimum user specification | query user minimum_user_options'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'minimum_user_options'
 
     - name: >
-        Default | verify | minimum user specification |
+        Verify | minimum user specification |
         assert user minimum_user_options
       ansible.builtin.assert:
         quiet: true
@@ -45,36 +44,32 @@
           ✘ minimum_user_options does not exist, not uid=810, or home directory
           does not exist.
 
-    - name: >
-        Default | verify | minimum user specification |
-        /home/minimum_user_options
+    - name: 'Verify | minimum user specification | /home/minimum_user_options'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
-        test_name: >
-          Default | verify | minimum user specification |
-          /home/minimum_user_options
+        test_name:
+          'Verify | minimum user specification | /home/minimum_user_options'
         test_file: '/home/minimum_user_options'
         test_owner: '810'
         test_group: '1000'
         test_mode: '0755'
         test_state: 'directory'
+        test_diff: true
 
-- name: 'Default | verify | all group options specified'
+- name: 'Verify | all group options specified'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Default | verify | all group options specified |
-        query group group_all_options
+    - name:
+        'Verify | all group options specified | query group group_all_options'
       ansible.builtin.getent:
         database: 'group'
         key: 'group_all_options'
 
     - name: >
-        Default | verify | all group options specified |
-        assert group group_all_options
+        Verify | all group options specified | assert group group_all_options
       ansible.builtin.assert:
         quiet: true
         that:
@@ -82,26 +77,26 @@
           - ansible_facts.getent_group.group_all_options[1] == '820'
         fail_msg: '✘ group_all_options does not exist or not gid=820.'
 
-- name: 'Default | verify | user with include_group explicit group'
+- name: 'Verify | user with include_group explicit group'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name: >
-        Default | verify | user with include_group explicit group |
+        Verify | user with include_group explicit group |
         query group explicit_user_group
       ansible.builtin.getent:
         database: 'group'
         key: 'explicit_user_group'
 
     - name: >
-        Default | verify | user with include_group explicit group |
+        Verify | user with include_group explicit group |
         query user explicit_user_group
       ansible.builtin.getent:
         database: 'passwd'
         key: 'explicit_user_group'
 
     - name: >
-        Default | verify | user with include_group explicit group |
+        Verify | user with include_group explicit group |
         assert group explicit_user_group
       ansible.builtin.assert:
         quiet: true
@@ -111,7 +106,7 @@
         fail_msg: '✘ explicit_user_group does not exist or not gid=830.'
 
     - name: >
-        Default | verify | user with include_group explicit group |
+        Verify | user with include_group explicit group |
         assert user explicit_user_group
       ansible.builtin.assert:
         quiet: true
@@ -126,42 +121,37 @@
           does not exist.
 
     - name: >
-        Default | verify | user with include_group explicit group |
+        Verify | user with include_group explicit group |
         /home/explicit_user_group
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
         test_name: >
-          Default | verify | user with include_group explicit group |
+          Verify | user with include_group explicit group |
           /home/explicit_user_group
         test_file: '/home/explicit_user_group'
         test_owner: '830'
         test_group: '830'
         test_mode: '0755'
         test_state: 'directory'
+        test_diff: true
 
-- name: 'Default | verify | user with all options'
+- name: 'Verify | user with all options'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Default | verify | user with all options |
-        query group user_all_options
+    - name: 'Verify | user with all options | query group user_all_options'
       ansible.builtin.getent:
         database: 'group'
         key: 'user_all_options'
 
-    - name: >
-        Default | verify | user with all options |
-        query user user_all_options
+    - name: 'Verify | user with all options | query user user_all_options'
       ansible.builtin.getent:
         database: 'passwd'
         key: 'user_all_options'
 
-    - name: >
-        Default | verify | user with all options |
-        assert group user_all_options
+    - name: 'Verify | user with all options | assert group user_all_options'
       ansible.builtin.assert:
         quiet: true
         that:
@@ -169,9 +159,7 @@
           - ansible_facts.getent_group.user_all_options[1] == '840'
         fail_msg: '✘ user_all_options does not exist or not gid=840.'
 
-    - name: >
-        Default | verify | user with all options |
-        assert user user_all_options
+    - name: 'Verify | user with all options | assert user user_all_options'
       ansible.builtin.assert:
         quiet: true
         that:
@@ -184,58 +172,55 @@
           ✘ user_all_options does not exist, not uid=830, or home directory
           does not exist.
 
-    - name: >
-        Default | verify | user with all options |
-        /home/user_all_options
+    - name: 'Verify | user with all options | /home/user_all_options'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
-        test_name: >
-          Default | verify | user with all options |
-          /home/user_all_options
+        test_name: 'Verify | user with all options | /home/user_all_options'
         test_file: '/home/user_all_options'
         test_owner: '840'
         test_group: '840'
         test_mode: '0755'
         test_state: 'directory'
+        test_diff: true
 
-- name: 'Default | verify | user lockdown'
+- name: 'Verify | user lockdown'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Default | verify | user lockdown | /home/user_lockdown'
+    - name: 'Verify | user lockdown | /home/user_lockdown'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
-        test_name: 'Default | verify | user lockdown | /home/user_lockdown'
+        test_name: 'Verify | user lockdown | /home/user_lockdown'
         test_file: '/home/user_lockdown'
         test_owner: 'user_lockdown'
         test_group: 'user_lockdown'
         test_mode: '0700'
         test_state: 'directory'
+        test_diff: true
 
-    - name: 'Default | verify | user lockdown | /home/user_lockdown/.profile'
+    - name: 'Verify | user lockdown | /home/user_lockdown/.profile'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'file.yml'
       vars:
-        test_name:
-          'Default | verify | user lockdown | /home/user_lockdown/.profile'
+        test_name: 'Verify | user lockdown | /home/user_lockdown/.profile'
         test_file: '/home/user_lockdown/.profile'
         test_owner: 'user_lockdown'
         test_group: 'user_lockdown'
         test_mode: '0600'
         test_state: 'file'
+        test_diff: true
 
-- name:
-    'Default | verify | alt user settings (same user with different settings)'
+- name: 'Verify | alt user settings (same user with different settings)'
   hosts: 'all'
   gather_facts: false
   tasks:
     - name: >
-        Default | verify |
+        Verify |
         alt user settings (same user with different settings) |
         query user minimum_user_options
       ansible.builtin.getent:
@@ -243,7 +228,7 @@
         key: 'user_group'
 
     - name: >
-        Default | verify |
+        Verify |
         alt user settings (same user with different settings) |
         assert user minimum_user_options
       ansible.builtin.assert:
@@ -259,7 +244,7 @@
           exist.
 
     - name: >
-        Default | verify |
+        Verify |
         alt user settings (same user with different settings) |
         /home/user_group
       ansible.builtin.include_role:
@@ -267,7 +252,7 @@
         tasks_from: 'file.yml'
       vars:
         test_name: >
-          Default | verify |
+          Verify |
           alt user settings (same user with different settings) |
           /home/user_group
         test_file: '/home/user_group'
@@ -275,17 +260,16 @@
         test_group: '860'
         test_mode: '0755'
         test_state: 'directory'
+        test_diff: true
 
-- name: 'Default | verify | high-entropy packages'
+- name: 'Verify | high-entropy packages'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: >
-        Default | verify | high-entropy packages | gather installed packages
+    - name: 'Verify | high-entropy packages | gather installed packages'
       ansible.builtin.package_facts:
 
-    - name: >
-        Default | verify | high-entropy packages | assert rng-tools installed
+    - name: 'Verify | high-entropy packages | assert rng-tools installed'
       ansible.builtin.assert:
         quiet: true
         that:

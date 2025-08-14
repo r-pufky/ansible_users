@@ -1,16 +1,14 @@
 ---
-- name: 'User sudoers extension | verify'
+- name: 'Verify'
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name:
-        'User sudoers extension | verify | /etc/sudoers.d/sudoers_extension'
+    - name: 'Verify | /etc/sudoers.d/sudoers_extension'
       ansible.builtin.slurp:
         path: '/etc/sudoers.d/sudoers_extension'
       register: _test_users_sudoers_extension
 
-    - name: >
-        User sudoers extension | verify | assert sudoers configuration correct
+    - name: 'Verify | assert sudoers configuration correct'
       ansible.builtin.assert:
         quiet: true
         that:
