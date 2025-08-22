@@ -210,6 +210,12 @@ Run all unit tests:
 molecule test --all
 ```
 
+### Releases
+Major release versions track Debian release versions:
+
+* **[13.x.x](https://github.com/r-pufky/ansible_users)**: 13 Trixie.
+* **[12.x.x](https://github.com/r-pufky/ansible_users/tree/12.x)**: 12 Bookworm.
+
 ### Issues
 Create a bug and provide as much information as possible.
 
