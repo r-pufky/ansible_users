@@ -7,8 +7,8 @@
 # * https://docs.ansible.com/ansible/latest/user_guide/become.html#risks-of-becoming-an-unprivileged-user
 
 # Last time user options were validated against a default configuration.
-users_role_validate_date: '2024-06-23'
-users_role_validate_release: 'bookworm'
+users_role_validate_date: '2025-08-21'
+users_role_validate_release: 'trixie'
 
 ###############################################################################
 # APT Packages
@@ -16,7 +16,7 @@ users_role_validate_release: 'bookworm'
 
 users_role_packages:
   - 'gnupg2'  # GPG.
-  - 'acl'  # unprivileged user GPG (gnupg2) setup.
+  - 'acl'  # Unprivileged user GPG (gnupg2) setup.
 
 # High entropy packages.
 #

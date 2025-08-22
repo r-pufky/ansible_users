@@ -13,6 +13,10 @@
         quiet: true
         that:
           - _test_users_sudoers_extension.content | b64decode == '%sudo ALL=(root)NOEXEC:SETENV: ALL'  # yamllint disable-line rule:line-length
-        fail_msg: >
-          ✘ sudoers_extension sudoers invalid
-          (expected %sudo ALL=(root)NOEXEC:SETENV: ALL).
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │                 sudoers_extension sudoers invalid                 │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │ Expected %sudo ALL=(root)NOEXEC:SETENV: ALL).

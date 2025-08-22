@@ -33,7 +33,7 @@
   ansible.builtin.set_fact:
     _users:
       '{{ hostvars[inventory_hostname]["users_user_" ~ user] | default({}) }}'
-  no_log: true  # passwords
+  no_log: true  # Passwords.
 
 - name: 'User | validate GPG extension options'
   when: _users.extensions is defined and _users.extensions.gpg is defined
@@ -42,7 +42,12 @@
     that:
       - _users.home is defined
       - _users.extensions.gpg
-    fail_msg: '✘ Using extended gpg option requires user.home.'
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │           Using extended gpg option requires user.home.           │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'User | validate lockdown extension options'
   when: _users.extensions is defined and _users.extensions.lockdown is defined
@@ -51,7 +56,12 @@
     that:
       - _users.home is defined
       - _users.extensions.lockdown
-    fail_msg: '✘ Using extended lockdown option requires user.home.'
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │        Using extended lockdown option requires user.home.         │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'User | validate copy data extension options'
   when: _users.extensions is defined and _users.extensions.copy_data is defined
@@ -60,7 +70,12 @@
     that:
       - _users.home is defined
       - _users.extensions.copy_data
-    fail_msg: '✘ Using extended copy_data option requires user.home.'
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │        Using extended copy_data option requires user.home.        │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'User | validate include group extension options'
   when: >
@@ -71,7 +86,12 @@
     that:
       - _users.group is defined
       - _users.extensions.include_group
-    fail_msg: '✘ Using extended include_group option requires user.group.'
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │     Using extended include_group option requires user.group.      │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'User | validate SSH extension options'
   when: _users.extensions is defined and _users.extensions.ssh is defined
@@ -81,7 +101,12 @@
       - _users.home is defined
       - _users.group is defined
       - _users.name is defined
-    fail_msg: '✘ Using extended SSH options requires user.{home, group, name}.'
+    fail_msg: |
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │   Using extended SSH options requires user.{home, group, name}.   │
+      │                                                                   │
+      ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'User | automatically including user group'
   when: >
@@ -91,7 +116,7 @@
   ansible.builtin.include_tasks: 'group.yml'
   vars:
     group: '{{ _users.name }}'
-  no_log: true  # passwords, gpg keys, ssh keys
+  no_log: true  # Passwords, gpg keys, ssh keys.
 
 - name: 'User | create user {{ _users.name }}'
   ansible.builtin.user:
@@ -183,7 +208,7 @@
                 mode: '0400'
                 content: '{{ item.private }}'
               loop: '{{ _users.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
             - name: 'User | manage SSH keys | add public'
               when: item.state | default("present") == 'present'
@@ -194,10 +219,10 @@
                   }}'
                 owner: '{{ _users.name }}'
                 group: '{{ _users.group }}'
-                mode: '0640'  # prevent file thrashing if lockdown is set.
+                mode: '0640'  # Prevent file thrashing if lockdown is set.
                 content: '{{ item.public }}'
               loop: '{{ _users.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
             - name: 'User | manage SSH keys | remove private'
               when: item.state | default("present") == 'absent'
@@ -206,7 +231,7 @@
                   '{{ _users.home }}/.ssh/{{ item.name | default("id_rsa") }}'
                 state: 'absent'
               loop: '{{ _users.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
             - name: 'User | manage SSH keys | remove public'
               when: item.state | default("present") == 'absent'
@@ -217,7 +242,7 @@
                   }}'
                 state: 'absent'
               loop: '{{ _users.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
         - name: 'User | set SSH config'
           when: _users.extensions.ssh.config is defined

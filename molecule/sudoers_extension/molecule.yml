@@ -48,15 +48,15 @@ provisioner:
         users_role_group: '{{ users_group_sudoers_extension }}'
         users_role_user: '{{ users_user_sudoers_extension }}'
 platforms:
-  - name: 'users-debian-12-sudoers_extension-user'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'users-debian-13-sudoers_extension-user'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
     command: '/lib/systemd/systemd'
     pre_build_image: true
-  - name: 'users-debian-12-sudoers_extension-role'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'users-debian-13-sudoers_extension-role'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

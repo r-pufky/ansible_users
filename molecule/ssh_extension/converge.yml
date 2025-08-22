@@ -1,6 +1,6 @@
 ---
 - name: 'Converge'
-  hosts: 'user-debian-12-ssh_extension-user'
+  hosts: 'user-debian-13-ssh_extension-user'
   gather_facts: false
   tasks:
     - name: 'Converge | apply r_pufky.deb.users (user)'
@@ -8,7 +8,7 @@
         name: 'r_pufky.deb.users'
 
 - name: 'Converge'
-  hosts: 'user-debian-12-ssh_extension-role'
+  hosts: 'user-debian-13-ssh_extension-role'
   gather_facts: false
   tasks:
     - name: 'Converge | apply r_pufky.deb.users (role)'
@@ -17,7 +17,7 @@
         tasks_from: 'role_account_add.yml'
 
 - name: 'Converge'
-  hosts: 'user-debian-12-ssh_extension-role'
+  hosts: 'user-debian-13-ssh_extension-role'
   gather_facts: false
   tasks:
     - name: 'Converge | apply r_pufky.deb.users (role)'

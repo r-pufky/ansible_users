@@ -55,7 +55,7 @@
     create user {{ users_role_user.name | default("") }}
     {{ users_role_user.comment | default("") }}
   when: users_role_create_user and users_role_user_role_user_exists.rc != 0
-  ansible.builtin.user:  # noqa name[template] readability
+  ansible.builtin.user:  # noqa name[template] readability.
     append: '{{ users_role_user.append | default(false) }}'
     authorization: '{{ users_role_user.authorization | default(omit) }}'
     comment: '{{ users_role_user.comment | default(omit) }}'
@@ -150,7 +150,7 @@
                 mode: '0400'
                 content: '{{ item.private }}'
               loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
             - name: 'User | manage SSH keys | add public'
               when: item.state | default("present") == 'present'
@@ -161,10 +161,10 @@
                   }}'
                 owner: '{{ users_role_user.name }}'
                 group: '{{ users_role_user.group }}'
-                mode: '0640'  # prevent file thrashing if lockdown is set.
+                mode: '0640'  # Prevent file thrashing if lockdown is set.
                 content: '{{ item.public }}'
               loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
             - name: 'User | manage SSH keys | remove private'
               when: item.state | default("present") == 'absent'
@@ -175,7 +175,7 @@
                   }}'
                 state: 'absent'
               loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
             - name: 'User | manage SSH keys | remove public'
               when: item.state | default("present") == 'absent'
@@ -186,7 +186,7 @@
                   }}'
                 state: 'absent'
               loop: '{{ users_role_user.extensions.ssh.ssh_keys }}'
-              no_log: true  # private key
+              no_log: true  # Private key.
 
         - name: 'Role account add | set SSH config'
           when: users_role_user.extensions.ssh.config is defined

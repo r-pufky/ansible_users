@@ -1,6 +1,6 @@
 ---
 - name: 'Converge'
-  hosts: 'users-debian-12-gpg_extension-user'
+  hosts: 'users-debian-13-gpg_extension-user'
   gather_facts: false
   tasks:
     - name: 'Converge | apply r_pufky.deb.users (user)'
@@ -8,7 +8,7 @@
         name: 'r_pufky.deb.users'
 
 - name: 'Converge'
-  hosts: 'users-debian-12-gpg_extension-role'
+  hosts: 'users-debian-13-gpg_extension-role'
   gather_facts: false
   tasks:
     - name: 'Converge | apply r_pufky.deb.users (role)'

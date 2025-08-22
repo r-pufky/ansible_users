@@ -111,15 +111,15 @@ provisioner:
         users_role_group: '{{ users_group_ssh_extension }}'
         users_role_user: '{{ users_user_ssh_extension }}'
 platforms:
-  - name: 'user-debian-12-ssh_extension-user'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'user-debian-13-ssh_extension-user'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
     command: '/lib/systemd/systemd'
     pre_build_image: true
-  - name: 'user-debian-12-ssh_extension-role'
-    image: 'ghcr.io/hifis-net/debian-systemd:12'
+  - name: 'user-debian-13-ssh_extension-role'
+    image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
       - '/sys/fs/cgroup:/sys/fs/cgroup:ro'

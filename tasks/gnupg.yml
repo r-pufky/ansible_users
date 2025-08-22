@@ -41,7 +41,7 @@
 # * https://www.gnupg.org/documentation/manuals/gnupg/GPG-Esoteric-Options.html
 
 - name: 'Gnupg | create {{ _users.home }}/.gnupg'
-  ansible.builtin.file:  # noqa name[template] directory structure
+  ansible.builtin.file:  # noqa name[template] directory structure.
     dest: '{{ _users.home }}/.gnupg'
     owner: '{{ _users.name }}'
     group: '{{ _users.name }}'
@@ -78,7 +78,7 @@
   loop: '{{ _users.extensions.gpg.gpg_keys }}'
   loop_control:
     loop_var: 'key'
-  no_log: true  # private keys
+  no_log: true  # Private keys.
 
 - name: 'Gnupg | set key trust'
   ansible.builtin.command:

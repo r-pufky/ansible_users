@@ -27,5 +27,9 @@
       ansible.builtin.assert:
         quiet: true
         that: (_test_users_gpg_key_list.stdout_lines | last | split(":"))[1] == "2"  # yamllint disable-line rule:line-length
-        fail_msg: >
-          ✘ user_valid_gpg_keys imported trust NOT correct (expected 2).
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │   user_valid_gpg_keys imported trust NOT correct (expected 2).    │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯

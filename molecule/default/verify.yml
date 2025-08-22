@@ -18,7 +18,12 @@
         that:
           - '"minimum_group_options" in ansible_facts.getent_group'
           - ansible_facts.getent_group.minimum_group_options[1] == '800'
-        fail_msg: '✘ minimum_group_options does not exist or not gid=800.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │       minimum_group_options does not exist or not gid=800.        │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Verify | minimum user specification'
   hosts: 'all'
@@ -40,9 +45,15 @@
           - ansible_facts.getent_passwd.minimum_user_options[1] == '810'
           - ansible_facts.getent_passwd.minimum_user_options[4] == '/home/minimum_user_options'  # yamllint disable-line rule:line-length
           - ansible_facts.getent_passwd.minimum_user_options[5] == '/bin/bash'
-        fail_msg: >
-          ✘ minimum_user_options does not exist, not uid=810, or home directory
-          does not exist.
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │                       minimum_user_options                        │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │* Does not exist.
+          │* Not uid=810.
+          │* Or home directory does not exist.
 
     - name: 'Verify | minimum user specification | /home/minimum_user_options'
       ansible.builtin.include_role:
@@ -54,7 +65,7 @@
         test_file: '/home/minimum_user_options'
         test_owner: '810'
         test_group: '1000'
-        test_mode: '0755'
+        test_mode: '0700'
         test_state: 'directory'
         test_diff: true
 
@@ -75,7 +86,12 @@
         that:
           - '"group_all_options" in ansible_facts.getent_group'
           - ansible_facts.getent_group.group_all_options[1] == '820'
-        fail_msg: '✘ group_all_options does not exist or not gid=820.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │         group_all_options does not exist or not gid=820.          │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Verify | user with include_group explicit group'
   hosts: 'all'
@@ -103,7 +119,12 @@
         that:
           - '"explicit_user_group" in ansible_facts.getent_group'
           - ansible_facts.getent_group.explicit_user_group[1] == '830'
-        fail_msg: '✘ explicit_user_group does not exist or not gid=830.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │         explicit_user_group does not exist or not gid=830.        │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: >
         Verify | user with include_group explicit group |
@@ -116,9 +137,15 @@
           - ansible_facts.getent_passwd.explicit_user_group[2] == '830'
           - ansible_facts.getent_passwd.explicit_user_group[4] == '/home/explicit_user_group'  # yamllint disable-line rule:line-length
           - ansible_facts.getent_passwd.explicit_user_group[5] == '/bin/bash'
-        fail_msg: >
-          ✘ explicit_user_group does not exist, not uid=830, or home directory
-          does not exist.
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │                        explicit_user_group                        │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │* Does not exist.
+          │* Not uid=830.
+          │* Or home directory does not exist.
 
     - name: >
         Verify | user with include_group explicit group |
@@ -133,7 +160,7 @@
         test_file: '/home/explicit_user_group'
         test_owner: '830'
         test_group: '830'
-        test_mode: '0755'
+        test_mode: '0700'
         test_state: 'directory'
         test_diff: true
 
@@ -168,9 +195,15 @@
           - ansible_facts.getent_passwd.user_all_options[2] == '840'
           - ansible_facts.getent_passwd.user_all_options[4] == '/home/user_all_options'  # yamllint disable-line rule:line-length
           - ansible_facts.getent_passwd.user_all_options[5] == '/bin/bash'
-        fail_msg: >
-          ✘ user_all_options does not exist, not uid=830, or home directory
-          does not exist.
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │                         user_all_options                          │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │* Does not exist.
+          │* Not uid=830.
+          │* Or home directory does not exist.
 
     - name: 'Verify | user with all options | /home/user_all_options'
       ansible.builtin.include_role:
@@ -181,7 +214,7 @@
         test_file: '/home/user_all_options'
         test_owner: '840'
         test_group: '840'
-        test_mode: '0755'
+        test_mode: '0700'
         test_state: 'directory'
         test_diff: true
 
@@ -239,9 +272,15 @@
           - ansible_facts.getent_passwd.user_group[2] == '860'
           - ansible_facts.getent_passwd.user_group[4] == '/home/user_group'
           - ansible_facts.getent_passwd.user_group[5] == '/bin/bash'
-        fail_msg: >
-          ✘ user_group does not exist, not uid=810, or home directory does not
-          exist.
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │                            user_group                             │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │* Does not exist.
+          │* Not uid=810.
+          │* Or home directory does not exist.
 
     - name: >
         Verify |
@@ -258,7 +297,7 @@
         test_file: '/home/user_group'
         test_owner: '860'
         test_group: '860'
-        test_mode: '0755'
+        test_mode: '0700'
         test_state: 'directory'
         test_diff: true
 
@@ -274,5 +313,9 @@
         quiet: true
         that:
           - '"rng-tools5" in ansible_facts.packages'
-        fail_msg: >
-          ✘ rng-tools5 should be install on containers for high-entropy.
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │   rng-tools5 should be install on containers for high-entropy.    │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯

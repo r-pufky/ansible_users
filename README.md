@@ -183,7 +183,7 @@ roles/my_custom_role/tasks/add_mandatory_users.yml
       gid: 800
 ```
 
-### Debian Bookworm Changes
+### Debian 12+ Changes
 
 #### ssh group now _ssh
 ssh group migrated to **_ssh**. ssh group must be manually managed if used with

@@ -20,7 +20,12 @@
           - ansible_facts.getent_passwd.user_all_defaults_valid[4] == '/nonexistent'  # yamllint disable-line rule:line-length
           - ansible_facts.getent_passwd.user_all_defaults_valid[5] == '/usr/sbin/nologin'  # yamllint disable-line rule:line-length
         success_msg: 'user_all_defaults_valid correct.'
-        fail_msg: '✘ user_all_defaults_valid incorrect passwd values.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │         user_all_defaults_valid incorrect passwd values.          │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Verify | user/group defaults | query group_all_defaults_valid'
       ansible.builtin.getent:
@@ -36,7 +41,12 @@
           - '"group_all_defaults_valid" in ansible_facts.getent_group'
           - ansible_facts.getent_group.group_all_defaults_valid[1] == '1001'
         success_msg: 'group_all_defaults_valid correct.'
-        fail_msg: '✘ group_all_defaults_valid incorrect passwd values.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │         group_all_defaults_valid incorrect passwd values.         │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Verify | user/group all values'
   hosts: 'all'
@@ -56,7 +66,12 @@
           - '"group_all_specified_values" in ansible_facts.getent_group'
           - ansible_facts.getent_group.group_all_specified_values[1] == '1500'
         success_msg: 'group_all_specified_values correct.'
-        fail_msg: '✘ group_all_specified_values incorrect passwd values.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │        group_all_specified_values incorrect passwd values.        │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Verify | user/group all values | query user_all_specified_values'
       ansible.builtin.getent:
@@ -76,7 +91,12 @@
           - ansible_facts.getent_passwd.user_all_specified_values[4] == '/etc/test_location'  # yamllint disable-line rule:line-length
           - ansible_facts.getent_passwd.user_all_specified_values[5] == '/bin/bash'  # yamllint disable-line rule:line-length
         success_msg: 'user_all_specified_values correct.'
-        fail_msg: '✘ user_all_specified_values incorrect passwd values.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │        user_all_specified_values incorrect passwd values.         │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Verify | simultaneous user/group'
   hosts: 'all'
@@ -109,4 +129,9 @@
           - ansible_facts.getent_passwd.user_simul_user[1] == '1550'
           - ansible_facts.getent_passwd.user_simul_user[2] == '1551'
         success_msg: 'user_simul_user correct.'
-        fail_msg: '✘ user_simul_user incorrect passwd values.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │             user_simul_user incorrect passwd values.              │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯

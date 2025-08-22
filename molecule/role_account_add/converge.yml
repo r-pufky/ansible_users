@@ -48,7 +48,7 @@
           create_home: true
           expires: -1
           force: false
-          generate_ssh_key: true
+          generate_ssh_key: false
           group: 'group_all_specified_values'
           groups: ['staff']
           hidden: false
@@ -71,7 +71,7 @@
           ssh_key_bits: 1024
           ssh_key_comment: 'for testing use only'
           ssh_key_file: '.ssh/id_rsa'
-          ssh_key_passphrase: ''
+          ssh_key_passphrase: 'test'
           ssh_key_type: 'rsa'
           system: true
           uid: 1500

@@ -32,11 +32,11 @@
   loop: '{{ users_accounts_groups | default([]) }}'
   loop_control:
     loop_var: 'group'
-  no_log: true  # passwords
+  no_log: true  # Passwords.
 
 - name: 'Manage users'
   ansible.builtin.include_tasks: 'user.yml'
   loop: '{{ users_accounts_users | default([]) }}'
   loop_control:
     loop_var: 'user'
-  no_log: true  # passwords, GPG keys, SSH keys
+  no_log: true  # Passwords, GPG keys, SSH keys.
