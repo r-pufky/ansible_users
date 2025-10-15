@@ -203,7 +203,7 @@ enable `UsePam=yes` as this leads to security vulnerabilities.
 https://unix.stackexchange.com/questions/193066/how-to-unlock-account-for-public-key-ssh-authorization-but-not-for-password-aut
 
 ## Development
-Configure [environment](https://github.com/r-pufky/ansible_collection_docs/blob/main/dev/environment/README.md)
+Configure [environment](https://github.com/r-pufky/ansible_collection_docs/blob/main/ansible/environment.md)
 
 Run all unit tests:
 ``` bash
