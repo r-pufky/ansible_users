@@ -2,11 +2,18 @@
 ###############################################################################
 # Add User/Group for Role
 ###############################################################################
-# Adds a given user/group for calling role.
+# Adds a given user/group for calling role. Only created if user/group does not
+# exist before tasks are called. Exported UID/GID reflects the current system
+# state after these tasks are run (not reflected in gather_facts unless run
+# after role_account_add).
 #
 # Steps are exactly the same as user steps but included in one task to make
 # external role consumption easy. Always change {user,group}.yml when making
 # changes here, unless those changes are defaults.
+#
+# Exports:
+#   _users_uid: int - UID for users_role_user.name.
+#   _users_gid: int - GID for users_role_user.name.
 
 - name: 'Role account add | install packages'
   ansible.builtin.include_role:
@@ -253,3 +260,18 @@
         users_role_user.extensions.lockdown
       ansible.builtin.command: 'chmod -R go-rwx {{ users_role_user.home }}'
       changed_when: false
+
+# Pre-existing users may have a different UID/GID.
+- name: 'Role account add | enumerate {{ users_role_user.name | default("") }}'
+  when: users_role_create_user
+  ansible.builtin.user:
+    name: '{{ users_role_user.name }}'
+  check_mode: true
+  changed_when: false
+  register: users__query
+
+- name: 'Role account add | parse system UID/GID'
+  when: users_role_create_user
+  ansible.builtin.set_fact:
+    _users_uid: '{{ users__query.uid }}'
+    _users_gid: '{{ users__query.group }}'

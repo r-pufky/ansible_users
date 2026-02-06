@@ -8,6 +8,16 @@ consumption.
 ## Role Variables
 [defaults](https://github.com/r-pufky/ansible_users/tree/main/defaults/main/)
 
+### Generated Variables
+After successful execution the following variables are available for further
+manipulation of extracted release during the same play (standard role variable
+scope):
+
+ Variable   | type | Description
+------------|------|-------------------------------------------------------
+ _users_uid | int  | UID for users_role_user.name (role_account_add only).
+ _users_gid | int  | GID for users_role_user.name (role_account_add only).
+
 ## Dependencies
 **galaxy-ng** roles cannot be used independently. Part of
 [r_pufky.deb](https://github.com/r-pufky/ansible_collection_deb) collection.
