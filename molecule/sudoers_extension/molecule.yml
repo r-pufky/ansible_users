@@ -2,8 +2,7 @@
 ###############################################################################
 # Sudoers Extension
 ###############################################################################
-# Verify sudoers extensions works properly; apply to both user and role
-# accounts to verify no divergence between account types.
+# Verify sudoers extensions works properly.
 #
 # Tests:
 # * User is granted '%sudo ALL=(root)NOEXEC:SETENV: ALL'.
@@ -43,19 +42,10 @@ provisioner:
               runas: 'root'
               setenv: true
               validation: 'detect'
-        users_accounts_users:
+        users_cfg_users:
           - 'sudoers_extension'
-        users_role_group: '{{ users_group_sudoers_extension }}'
-        users_role_user: '{{ users_user_sudoers_extension }}'
 platforms:
-  - name: 'users-debian-13-sudoers_extension-user'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-  - name: 'users-debian-13-sudoers_extension-role'
+  - name: 'users-sudoers-extension'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
@@ -64,21 +54,11 @@ platforms:
     pre_build_image: true
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
     - 'converge'
-    # - 'idempotence'  # User accounts are only created once.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

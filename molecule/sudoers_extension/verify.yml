@@ -3,20 +3,16 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | /etc/sudoers.d/sudoers_extension'
-      ansible.builtin.slurp:
-        path: '/etc/sudoers.d/sudoers_extension'
-      register: _test_users_sudoers_extension
-
-    - name: 'Verify | assert sudoers configuration correct'
-      ansible.builtin.assert:
-        quiet: true
-        that:
-          - _test_users_sudoers_extension.content | b64decode == '%sudo ALL=(root)NOEXEC:SETENV: ALL'  # yamllint disable-line rule:line-length
-        fail_msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │                 sudoers_extension sudoers invalid                 │
-          │                                                                   │
-          ├───────────────────────────────────────────────────────────────────╯
-          │ Expected %sudo ALL=(root)NOEXEC:SETENV: ALL).
+    - name: 'Verify | test | /etc/sudoers.d/sudoers_extension'
+      ansible.builtin.include_role:
+        name: 'r_pufky.data.test'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Verify | test | /etc/sudoers.d/sudoers_extension'
+        test_src: 'files/sudoers_extension'
+        test_file: '/etc/sudoers.d/sudoers_extension'
+        test_owner: 'root'
+        test_group: 'root'
+        test_mode: '0440'
+        test_state: 'file'
+        test_diff: true

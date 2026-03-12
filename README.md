@@ -2,29 +2,26 @@
 Manage users and groups in a sane and programmatic way for easy role and user
 consumption.
 
-## Requirements
-[supported platforms](https://github.com/r-pufky/ansible_users/blob/main/meta/main.yml)
+## [Requirements][i]
+Requires [r_pufky.deb][g] galaxy-ng collection.
 
 ## Role Variables
-[defaults](https://github.com/r-pufky/ansible_users/tree/main/defaults/main/)
+Detailed variable use documented in defaults. See usage for role operation.
 
-### Generated Variables
-After successful execution the following variables are available for further
-manipulation of extracted release during the same play (standard role variable
-scope):
+* [defaults][j] - User configurable options.
 
- Variable   | type | Description
-------------|------|-------------------------------------------------------
- _users_uid | int  | UID for users_role_user.name (role_account_add only).
- _users_gid | int  | GID for users_role_user.name (role_account_add only).
+* [account definitions][k] - Encapsulated user data structure.
 
-## Dependencies
-**galaxy-ng** roles cannot be used independently. Part of
-[r_pufky.deb](https://github.com/r-pufky/ansible_collection_deb) collection.
-
-## Example Playbook
+## Usage
 Consume this role to easily create consistent complex users and groups across a
 fleet of machines and roles.
+
+### Feature Flags
+Tasks are gated by feature flags and executed in the following order.
+
+  Step | Flag                   | Notes
+ ------|------------------------|-------
+  1    | users_flg_high_entropy | Install high-entropy packages.
 
 ### User/Group Definitions
 Host inventory is parsed for user/group definitions:
@@ -32,13 +29,19 @@ Host inventory is parsed for user/group definitions:
 * `users_group_{LABEL}` defines a group.
 * `users_user_{LABEL}` defines a user.
 
-And applied based on `users_accounts_*` variables.
+And applied based on `users_cfg_*` variables.
 
 Labels are generally usernames but may be used to specify multiple variants of
 the same account (e.g. `users_user_example` and `users_user_example_no_ssh`).
 
 Definitions are generally placed in `group_vars` but may also be specified
 per-host to explicitly define these per system.
+
+### Example Playbooks
+
+#### Managing fleet
+Role will apply users/groups based on finding the user/group definition
+variables and applying those.
 
 group_vars/all/users.yml
 ``` yaml
@@ -113,28 +116,32 @@ users_user_example_no_extensions:
   uid: 1000
 ```
 
-### Managing Users/Groups
-Role will apply users/groups based on finding the user/group definition
-variables and applying those. These are generally applied per machine in
-`host_vars`.
+``` yaml
+- name: 'Set users and groups for all hosts.'
+  hosts: 'all'
+  roles:
+     - 'r_pufky.deb.users'
+```
+
+#### Managing per machine
+Use `host_vars` to apply per machine settings.
 
 host_vars/client.example.com/vars/users.yml
 ``` yaml
-users_accounts_users:
+users_cfg_users:
   - 'root'
   - 'ansible'
-users_accounts_users_absent:
+users_cfg_users_absent:
   - 'example'
 ```
 
 host_vars/webserver.example.com/vars/users.yml
 ``` yaml
-users_accounts_users:
+users_cfg_users:
   - 'ansible'
   - 'example_no_extensions'
 ```
 
-site.yml
 ``` yaml
 - name: 'Manage system accounts'
   hosts: 'all'
@@ -144,11 +151,10 @@ site.yml
       name: 'r_pufky.deb.users'
 ```
 
-### Explicit Definitions
+#### Explicit Definitions
 Standard role playbook practices apply; you may define everything when
 including the role.
 
-playbook.yml
 ``` yaml
 - name: 'Manage system accounts'
   hosts: 'all'
@@ -163,79 +169,69 @@ playbook.yml
       users_user_example:
         name: 'example'
         uid: 1600
-      users_accounts_users:
+      users_cfg_users:
         - 'root'
-      users_accounts_users_absent:
+      users_cfg_users_absent:
         - 'example'
 ```
 
-### Role Playbook
-Roles many consume this role to easily create mandatory users and groups
-required for execution. Run once for each user/group to create.
+## Debian 12+ Changes
 
-Default user/group settings are focused on service deployments and are
-different then standard accounts. It is always best to explicitly set options.
+### ssh group now _ssh
+[ssh group migrated to **_ssh**](https://salsa.debian.org/ssh-team/openssh/-/commit/18da782ebe789d0cf107a550e474ba6352e68911).
+ssh group must be manually managed if used with users and groups, or migrate
+users to **_ssh**.
 
-roles/my_custom_role/tasks/add_mandatory_users.yml
-``` yaml
-- name: 'add required service user/groups'
-  ansible.builtin.include_role:
-    name: 'r_pufky.deb.users'
-    tasks_from: 'role_account_add'
-  vars:
-    users_role_user:
-      name: 'my_service_user'
-      groups: 'my_service_group'
-      uid: 800
-      system: true
-    users_role_group:
-      name: 'my_service_group'
-      gid: 800
-```
+### SSH pubkey authentication with locked passwords
+SSH now distinguishes between `!` and `*` password locking:
 
-### Debian 12+ Changes
+* *: lock password, allow SSH pubkey auth.
+* !: lock password, deny SSH pubkey auth.
 
-#### ssh group now _ssh
-ssh group migrated to **_ssh**. ssh group must be manually managed if used with
-users and groups, or migrate users to _ssh.
-
-https://salsa.debian.org/ssh-team/openssh/-/commit/18da782ebe789d0cf107a550e474ba6352e68911
-
-#### SSH pubkey authentication with locked passwords
-Locked accounts cannot SSH pubkey auth. SSH now distinguishes between `!` and
-`*` password locking:
-  *: lock password, allow SSH pubkey auth
-  !: lock password, deny SSH pubkey auth
-
-Any other means to lock the password will result in SSH pubkey failures. Do not
-enable `UsePam=yes` as this leads to security vulnerabilities.
-
-https://unix.stackexchange.com/questions/193066/how-to-unlock-account-for-public-key-ssh-authorization-but-not-for-password-aut
+Any other means to lock the password will result in SSH pubkey failures. Do
+NOT set ssh_cfg_server_use_pam=true as this leads to
+[security vulnerabilities][l] with potential [mitigataions][m] if absolutely
+necessary.
 
 ## Development
-Configure [environment](https://r-pufky.github.io/ansible_collection_docs/ansible/environment)
+Configure [environment][a].
 
-Run all unit tests:
 ``` bash
+# Run all tests.
 molecule test --all
 ```
 
-### Releases
-Major release versions track Debian release versions:
+### [Releases][b]
 
-* **[13.x.x](https://github.com/r-pufky/ansible_users)**: 13 Trixie.
-* **[12.x.x](https://github.com/r-pufky/ansible_users/tree/12.x)**: 12 Bookworm.
+  Release | Debian | Ansible | Notes
+ ---------|--------|---------|-------
+  3.x.x   | 13     | 2.20    | Ansible 2.20, semantic versioning.
+  2.x.x   | 13     | 2.18    | Migrate to Debian Trixie.
+  1.x.x   | 12     | 2.18    | Use standardized libraries.
+  0.x.x   | 12     | 2.18    | Migration from private repository.
 
-### Issues
+## Issues
 Create a bug and provide as much information as possible.
 
 Associate pull requests with a submitted bug.
 
 ## License
-[AGPL-3.0 License](https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0)
- [(direct link)](https://github.com/r-pufky/ansible_users/blob/main/LICENSE)
+[AGPL-3.0 License][c] | [direct link][f]
 
 ## Author Information
-PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
-| [github gist](https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22)
+PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 
+
+[a]: https://r-pufky.github.io/ansible_docs
+[b]: https://semver.org/spec/v2.0.0
+[c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
+[d]: https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9
+[e]: https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22
+
+[f]: https://github.com/r-pufky/ansible_users/blob/main/LICENSE
+[g]: https://github.com/r-pufky/ansible_collection_deb
+[i]: https://github.com/r-pufky/ansible_users/blob/main/meta/main.yml
+[j]: https://github.com/r-pufky/ansible_users/tree/main/defaults/main/main.yml
+[k]: https://github.com/r-pufky/ansible_users/tree/main/defaults/main/account_definitions.yml
+[l]: https://arlimus.github.io/articles/usepam
+[m]: https://unix.stackexchange.com/questions/193066/

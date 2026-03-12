@@ -8,7 +8,7 @@
 #
 # If include_group is true, the same named users_group_{LABEL} will
 # automatically be included. This allows a user to be created without needed to
-# specify the same group in another users_accounts_ variable.
+# specify the same group in another users_cfg_ variable.
 #
 # Using default(omit) will pass a null value to task, ensuring that specific
 # option is disabled when executed.
@@ -19,7 +19,7 @@
 # making changes here, unless those changes are defaults.
 #
 # Args:
-#   user: str - user to manage
+#   user: str - User to manage.
 #
 # Reference:
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/user_module.html
@@ -29,270 +29,277 @@
 # * https://salsa.debian.org/ssh-team/openssh/-/commit/18da782ebe789d0cf107a550e474ba6352e68911
 # yamllint enable rule:line-length
 
-- name: 'User | detect user attributes {{ user }}'
+- name: '{{ "User | fact | detect user attributes " ~ user }}'
   ansible.builtin.set_fact:
-    _users:
+    users__user:
       '{{ hostvars[inventory_hostname]["users_user_" ~ user] | default({}) }}'
   no_log: true  # Passwords.
 
-- name: 'User | validate GPG extension options'
-  when: _users.extensions is defined and _users.extensions.gpg is defined
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - _users.home is defined
-      - _users.extensions.gpg
-    fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │           Using extended gpg option requires user.home.           │
-      │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
-
-- name: 'User | validate lockdown extension options'
-  when: _users.extensions is defined and _users.extensions.lockdown is defined
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - _users.home is defined
-      - _users.extensions.lockdown
-    fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │        Using extended lockdown option requires user.home.         │
-      │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
-
-- name: 'User | validate copy data extension options'
-  when: _users.extensions is defined and _users.extensions.copy_data is defined
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - _users.home is defined
-      - _users.extensions.copy_data
-    fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │        Using extended copy_data option requires user.home.        │
-      │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
-
-- name: 'User | validate include group extension options'
+- name: 'User | assert | validate GPG extension options'
   when: >
-    _users.extensions is defined and
-    _users.extensions.include_group is defined
+    users__user.extensions is defined and
+    users__user.extensions.gpg is defined
   ansible.builtin.assert:
     quiet: true
     that:
-      - _users.group is defined
-      - _users.extensions.include_group
+      - users__user.home is defined
+      - users__user.extensions.gpg is defined
     fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │     Using extended include_group option requires user.group.      │
-      │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
 
-- name: 'User | validate SSH extension options'
-  when: _users.extensions is defined and _users.extensions.ssh is defined
+      ✘ Using extended gpg option requires user.home.
+
+- name: 'User | assert | validate lockdown extension options'
+  when: >
+    users__user.extensions is defined and
+    users__user.extensions.lockdown is defined
   ansible.builtin.assert:
     quiet: true
     that:
-      - _users.home is defined
-      - _users.group is defined
-      - _users.name is defined
+      - users__user.home is defined
+      - users__user.extensions.lockdown is defined
     fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │   Using extended SSH options requires user.{home, group, name}.   │
-      │                                                                   │
-      ╰───────────────────────────────────────────────────────────────────╯
+
+      ✘ Using extended lockdown option requires user.home.
+
+- name: 'User | assert | validate copy data extension options'
+  when: >
+    users__user.extensions is defined and
+    users__user.extensions.copy_data is defined
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - users__user.home is defined
+      - users__user.extensions.copy_data is defined
+    fail_msg: |
+
+      ✘ Using extended copy_data option requires user.home.
+
+- name: 'User | assert | validate include group extension options'
+  when: >
+    users__user.extensions is defined and
+    users__user.extensions.include_group is defined
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - users__user.group is defined
+      - users__user.extensions.include_group is defined
+    fail_msg: |
+
+      ✘ Using extended include_group option requires user.group.
+
+- name: 'User | assert | validate SSH extension options'
+  when: >
+    users__user.extensions is defined and
+    users__user.extensions.ssh is defined
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - users__user.home is defined
+      - users__user.group is defined
+      - users__user.name is defined
+    fail_msg: |
+
+      ✘ Using extended SSH options requires user.{home, group, name}.
 
 - name: 'User | automatically including user group'
   when: >
-    _users.extensions is defined and
-    _users.extensions.include_group is defined and
-    _users.extensions.include_group
+    users__user.extensions is defined and
+    users__user.extensions.include_group is defined and
+    users__user.extensions.include_group
   ansible.builtin.include_tasks: 'group.yml'
   vars:
-    group: '{{ _users.name }}'
+    group: '{{ users__user.name }}'
   no_log: true  # Passwords, gpg keys, ssh keys.
 
-- name: 'User | create user {{ _users.name }}'
+- name: '{{ "User | create " ~ users__user.name }}'
   ansible.builtin.user:
-    append: '{{ _users.append | default(false) }}'
-    authorization: '{{ _users.authorization | default(omit) }}'
-    comment: '{{ _users.comment | default(omit) }}'
-    create_home: '{{ _users.create_home | default(true) }}'
-    expires: '{{ _users.expires | default(-1) }}'
-    force: '{{ _users.force | default(false) }}'
-    generate_ssh_key: '{{ _users.generate_ssh_key | default(false) }}'
-    group: '{{ _users.group | default(omit) }}'
-    groups: '{{ _users.groups | default(omit) }}'
-    hidden: '{{ _users.hidden | default(omit) }}'
-    home: '{{ _users.home | default(omit) }}'
-    local: '{{ _users.local | default(false) }}'
-    login_class: '{{ _users.login_class | default(omit) }}'
-    move_home: '{{ _users.move_home | default(false) }}'
-    name: '{{ _users.name }}'
-    non_unique: '{{ _users.non_unique | default(false) }}'
-    password: '{{ _users.password | default("!") }}'
-    password_expire_max: '{{ _users.password_expire_max | default(omit) }}'
-    password_expire_min: '{{ _users.password_expire_min | default(omit) }}'
-    password_expire_warn: '{{ _users.password_expire_warn | default(omit) }}'
-    password_lock: '{{ _users.password_lock | default(false) }}'
-    profile: '{{ _users.profile | default(omit) }}'
-    remove: '{{ _users.remove | default(false) }}'
-    role: '{{ _users.role | default(omit) }}'
-    seuser: '{{ _users.seuser | default(omit) }}'
-    shell: '{{ _users.shell | default("/bin/bash") }}'
-    skeleton: '{{ _users.skeleton | default(omit) }}'
-    ssh_key_bits: '{{ _users.ssh_key_bits | default(omit) }}'
+    append: '{{ users__user.append | default(false) }}'
+    authorization: '{{ users__user.authorization | default(omit) }}'
+    comment: '{{ users__user.comment | default(omit) }}'
+    create_home: '{{ users__user.create_home | default(true) }}'
+    expires: '{{ users__user.expires | default(-1) }}'
+    force: '{{ users__user.force | default(false) }}'
+    generate_ssh_key: '{{ users__user.generate_ssh_key | default(false) }}'
+    group: '{{ users__user.group | default(omit) }}'
+    groups: '{{ users__user.groups | default(omit) }}'
+    hidden: '{{ users__user.hidden | default(omit) }}'
+    home: '{{ users__user.home | default(omit) }}'
+    local: '{{ users__user.local | default(false) }}'
+    login_class: '{{ users__user.login_class | default(omit) }}'
+    move_home: '{{ users__user.move_home | default(false) }}'
+    name: '{{ users__user.name }}'
+    non_unique: '{{ users__user.non_unique | default(false) }}'
+    password: '{{ users__user.password | default("!") }}'
+    password_expire_account_disable:
+      '{{ users__user.password_expire_account_disable | default(omit) }}'
+    password_expire_max:
+      '{{ users__user.password_expire_max | default(omit) }}'
+    password_expire_min:
+      '{{ users__user.password_expire_min | default(omit) }}'
+    password_expire_warn:
+      '{{ users__user.password_expire_warn | default(omit) }}'
+    password_lock: '{{ users__user.password_lock | default(false) }}'
+    profile: '{{ users__user.profile | default(omit) }}'
+    remove: '{{ users__user.remove | default(false) }}'
+    role: '{{ users__user.role | default(omit) }}'
+    seuser: '{{ users__user.seuser | default(omit) }}'
+    shell: '{{ users__user.shell | default("/bin/bash") }}'
+    skeleton: '{{ users__user.skeleton | default(omit) }}'
+    ssh_key_bits: '{{ users__user.ssh_key_bits | default(omit) }}'
     ssh_key_comment:
-      '{{ _users.ssh_key_comment | default("ansible-generated") }}'
-    ssh_key_file: '{{ _users.ssh_key_file | default(".ssh/id_rsa") }}'
+      '{{ users__user.ssh_key_comment | default("ansible-generated") }}'
+    ssh_key_file: '{{ users__user.ssh_key_file | default(".ssh/id_rsa") }}'
     ssh_key_passphrase: '{{
-        _users.ssh_key_passphrase |
+        users__user.ssh_key_passphrase |
         default(lookup("ansible.builtin.password",
                        "/dev/null",
                        chars=["ascii_letters", "digits"],
                        length=32))
       }}'
-    ssh_key_type: '{{ _users.ssh_key_type | default("rsa") }}'
+    ssh_key_type: '{{ users__user.ssh_key_type | default("rsa") }}'
     state: 'present'
-    system: '{{ _users.system | default(false) }}'
-    uid: '{{ _users.uid | default(omit) }}'
-    umask: '{{ _users.umask | default(omit) }}'
-    update_password: '{{ _users.update_password | default("always") }}'
+    system: '{{ users__user.system | default(false) }}'
+    uid: '{{ users__user.uid | default(omit) }}'
+    uid_max: '{{ users__user.uid_max | default(omit) }}'
+    uid_min: '{{ users__user.uid_min | default(omit) }}'
+    umask: '{{ users__user.umask | default(omit) }}'
+    update_password: '{{ users__user.update_password | default("always") }}'
 
 - name: 'User | process extensions'
-  when: _users.extensions is defined
+  when: users__user.extensions is defined
   block:
     - name: 'User | apply extended SSH configuration'
-      when: _users.extensions.ssh is defined
+      when: users__user.extensions.ssh is defined
       block:
-        - name: 'User | secure SSH directory'
+        - name: 'User | filesystem | secure ~/.ssh'
           ansible.builtin.file:
-            path: '{{ _users.home }}/.ssh'
-            owner: '{{ _users.name }}'
-            group: '{{ _users.group }}'
+            path: '{{ users__user.home ~ "/.ssh" }}'
+            owner: '{{ users__user.name }}'
+            group: '{{ users__user.group }}'
             mode: '0700'
             state: 'directory'
 
-        - name: 'User | add authorized keys'
-          when: _users.extensions.ssh.authorized_keys is defined
+        - name: 'User | authorized_key | add'
+          when: users__user.extensions.ssh.authorized_keys is defined
           ansible.posix.authorized_key:
-            user: '{{ _users.name }}'
+            comment: '{{ item.comment | default(omit) }}'
+            exclusive: '{{ item.exclusive | default(false) }}'
+            follow: '{{ item.follow | default(false) }}'
             key: '{{ item.key }}'
             key_options: '{{ item.key_options | default(omit) }}'
             manage_dir: '{{ item.manage_dir | default(true) }}'
             path: '{{ item.path | default(omit) }}'
-            comment: '{{ item.comment | default(omit) }}'
-            exclusive: '{{ item.exclusive | default(false) }}'
-            follow: '{{ item.follow | default(false) }}'
-            validate_certs: '{{ item.validate_certs | default(true) }}'
             state: '{{ item.state | default("present") }}'
-          loop: '{{ _users.extensions.ssh.authorized_keys }}'
+            user: '{{ users__user.name }}'
+            validate_certs: '{{ item.validate_certs | default(true) }}'
+          loop: '{{ users__user.extensions.ssh.authorized_keys }}'
 
         # Keep inline instead of include_tasks loop for singular role import.
         - name: 'User | manage SSH keys'
-          when: _users.extensions.ssh.ssh_keys is defined
+          when: users__user.extensions.ssh.ssh_keys is defined
           block:
-            - name: 'User | manage SSH keys | add private'
-              when: item.state | default("present") == 'present'
-              ansible.builtin.copy:
-                dest:
-                  '{{ _users.home }}/.ssh/{{ item.name | default("id_rsa") }}'
-                owner: '{{ _users.name }}'
-                group: '{{ _users.group }}'
-                mode: '0400'
-                content: '{{ item.private }}'
-              loop: '{{ _users.extensions.ssh.ssh_keys }}'
-              no_log: true  # Private key.
-
-            - name: 'User | manage SSH keys | add public'
+            - name: 'User | filesystem | add private keys ~/.ssh/'
               when: item.state | default("present") == 'present'
               ansible.builtin.copy:
                 dest: '{{
-                    _users.home ~ "/.ssh/" ~
+                    users__user.home ~ "/.ssh/" ~ item.name | default("id_rsa")
+                  }}'
+                owner: '{{ users__user.name }}'
+                group: '{{ users__user.group }}'
+                mode: '0400'
+                content: '{{ item.private }}'
+              loop: '{{ users__user.extensions.ssh.ssh_keys }}'
+              no_log: true  # Private key.
+
+            - name: 'User | filesystem | add public keys ~/.ssh/'
+              when: item.state | default("present") == 'present'
+              ansible.builtin.copy:
+                dest: '{{
+                    users__user.home ~ "/.ssh/" ~
                     item.name | default("id_rsa") ~ ".pub"
                   }}'
-                owner: '{{ _users.name }}'
-                group: '{{ _users.group }}'
+                owner: '{{ users__user.name }}'
+                group: '{{ users__user.group }}'
                 mode: '0640'  # Prevent file thrashing if lockdown is set.
                 content: '{{ item.public }}'
-              loop: '{{ _users.extensions.ssh.ssh_keys }}'
+              loop: '{{ users__user.extensions.ssh.ssh_keys }}'
               no_log: true  # Private key.
 
-            - name: 'User | manage SSH keys | remove private'
-              when: item.state | default("present") == 'absent'
-              ansible.builtin.file:
-                path:
-                  '{{ _users.home }}/.ssh/{{ item.name | default("id_rsa") }}'
-                state: 'absent'
-              loop: '{{ _users.extensions.ssh.ssh_keys }}'
-              no_log: true  # Private key.
-
-            - name: 'User | manage SSH keys | remove public'
+            - name: 'User | filesystem | remove private keys ~/.ssh/'
               when: item.state | default("present") == 'absent'
               ansible.builtin.file:
                 path: '{{
-                    _users.home ~ "/.ssh/" ~
+                    users__user.home ~ "/.ssh/" ~ item.name | default("id_rsa")
+                  }}'
+                state: 'absent'
+              loop: '{{ users__user.extensions.ssh.ssh_keys }}'
+              no_log: true  # Private key.
+
+            - name: 'User | filesystem | remove public keys ~/.ssh/'
+              when: item.state | default("present") == 'absent'
+              ansible.builtin.file:
+                path: '{{
+                    users__user.home ~ "/.ssh/" ~
                     item.name | default("id_rsa") ~ ".pub"
                   }}'
                 state: 'absent'
-              loop: '{{ _users.extensions.ssh.ssh_keys }}'
+              loop: '{{ users__user.extensions.ssh.ssh_keys }}'
               no_log: true  # Private key.
 
-        - name: 'User | set SSH config'
-          when: _users.extensions.ssh.config is defined
+        - name: 'User | filesystem | set ~/.ssh/config'
+          when: users__user.extensions.ssh.config is defined
           ansible.builtin.template:
             src: 'ssh/config.j2'
-            dest: '{{ _users.home }}/.ssh/config'
-            owner: '{{ _users.name }}'
-            group: '{{ _users.group }}'
+            dest: '{{ users__user.home ~ "/.ssh/config" }}'
+            owner: '{{ users__user.name }}'
+            group: '{{ users__user.group }}'
             mode: '0400'
 
-    - name: 'User | config sudoers'
-      when: _users.extensions.sudoers is defined
+    - name: 'User | sudoers | set'
+      when: users__user.extensions.sudoers is defined
       community.general.sudoers:
-        commands: '{{ _users.extensions.sudoers.commands | default(omit) }}'
-        group: '{{ _users.extensions.sudoers.group | default(omit) }}'
-        host: '{{ _users.extensions.sudoers.host | default("ALL") }}'
-        name: '{{ _users.extensions.sudoers.name }}'
-        noexec: '{{ _users.extensions.sudoers.noexec | default(false) }}'
+        commands:
+          '{{ users__user.extensions.sudoers.commands | default(omit) }}'
+        group: '{{ users__user.extensions.sudoers.group | default(omit) }}'
+        host: '{{ users__user.extensions.sudoers.host | default("ALL") }}'
+        name: '{{ users__user.extensions.sudoers.name }}'
+        noexec: '{{ users__user.extensions.sudoers.noexec | default(false) }}'
         nopassword:
-          '{{ _users.extensions.sudoers.nopassword | default(true) }}'
-        runas: '{{ _users.extensions.sudoers.runas | default(omit) }}'
-        setenv: '{{ _users.extensions.sudoers.setenv | default(false) }}'
-        state: '{{ _users.extensions.sudoers.state | default("present") }}'
+          '{{ users__user.extensions.sudoers.nopassword | default(true) }}'
+        runas: '{{ users__user.extensions.sudoers.runas | default(omit) }}'
+        setenv: '{{ users__user.extensions.sudoers.setenv | default(false) }}'
+        state:
+          '{{ users__user.extensions.sudoers.state | default("present") }}'
         sudoers_path: '{{
-            _users.extensions.sudoers.sudoers_path |
+            users__user.extensions.sudoers.sudoers_path |
             default("/etc/sudoers.d")
           }}'
-        user: '{{ _users.extensions.sudoers.user | default(omit) }}'
+        user: '{{ users__user.extensions.sudoers.user | default(omit) }}'
         validation:
-          '{{ _users.extensions.sudoers.validation | default("detect") }}'
+          '{{ users__user.extensions.sudoers.validation | default("detect") }}'
 
     - name: 'User | configure gnupg'
-      when:
-        _users.extensions.gpg is defined and _users.extensions.gpg | length > 0
+      when: >
+        users__user.extensions.gpg is defined and
+        users__user.extensions.gpg | length > 0
       ansible.builtin.include_tasks: 'gnupg.yml'
 
-    - name: 'User | copy user data'
-      when:
-        _users.extensions.copy_data is defined and _users.extensions.copy_data
+    - name: 'User | filesystem | copy user data ~'
+      when: >
+        users__user.extensions.copy_data is defined and
+        users__user.extensions.copy_data | length > 0
       ansible.builtin.copy:
-        src: '{{ _users.extensions.copy_data }}'
-        dest: '{{ _users.home }}'
-        owner: '{{ _users.name }}'
-        group: '{{ _users.name }}'
+        src: '{{ users__user.extensions.copy_data }}'
+        dest: '{{ users__user.home }}'
+        owner: '{{ users__user.name }}'
+        group: '{{ users__user.name }}'
         force: true
         mode: '0600'
         directory_mode: '0700'
 
-    - name: 'User | lockdown home'
-      when:
-        _users.extensions.lockdown is defined and _users.extensions.lockdown
-      ansible.builtin.command: 'chmod -R go-rwx {{ _users.home }}'
+    - name: 'User | cmd | lockdown ~'
+      when: >
+        users__user.extensions.lockdown is defined and
+        users__user.extensions.lockdown
+      ansible.builtin.command: '{{ "chmod -R go-rwx " ~ users__user.home }}'
       changed_when: false

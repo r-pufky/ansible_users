@@ -34,6 +34,14 @@
 #       Default: False.
 #   gid: int - Group id.
 #       Default: omit (auto generated).
+#   gid_max: int - GID_MAX for group creation (overwrite /etc/login.defs).
+#         Currently supported on Linux. Does nothing on other platforms.
+#         Requires local=False.
+#       Default: omit (system default).
+#   gid_min: int - GID_MIN for group creation (overwrite /etc/login.defs).
+#         Currently supported on Linux. Does nothing on other platforms.
+#         Requires local=False.
+#       Default: omit (system default).
 #   local: bool - Force use of local command alternatives.
 #       Default: False.
 #   name: str - Group name.
@@ -133,6 +141,9 @@
 #         *: Lock password, allow SSH pubkey auth.
 #         !: Lock password, deny SSH pubkey auth.
 #       Default: '!'.
+#   password_expire_account_disable: int - Disable account N days after expiry.
+#         Currently only: AIX, Linux, NetBSD, OpenBSD.
+#       Default: omit (system default).
 #   password_expire_max: int - Max number of days between password change.
 #       Default: omit (disabled).
 #   password_expire_min: int - Min number of days between password change.
@@ -179,6 +190,14 @@
 #       Default: False.
 #   uid: int - User UID.
 #       Default: omit (auto generated).
+#   uid_max: int - UID_MAX for creation (overwrite /etc/login.defs default).
+#         Currently supported on Linux. Does nothing on other platforms.
+#         Requires local=False.
+#       Default: omit (system default).
+#   uid_min: int - UID_MIN for creation (overwrite /etc/login.defs default).
+#         Currently supported on Linux. Does nothing on other platforms.
+#         Requires local=False.
+#       Default: omit (system default).
 #   umask: str - Umask of the user.
 #         Requires not using 'local'.
 #       Default: omit (system default).
@@ -297,7 +316,7 @@
 #           Includes the group task automatically to create the group before
 #           creating the user based on the user name; the primary user group
 #           still needs to be defined. This prevents the need to specify both
-#           groups and user users_accounts_* variables.
+#           groups and user users_cfg_* variables.
 #         Default: False.
 #
 # users_user_exampleuser:

@@ -13,7 +13,7 @@
 # making changes here, unless those changes are defaults.
 #
 # Args:
-#   group: str - group to manage
+#   group: str - Group to manage.
 #
 # Reference:
 # * https://docs.ansible.com/ansible/latest/collections/ansible/builtin/group_module.html
@@ -21,18 +21,19 @@
 # * https://github.com/ansible/ansible/issues/44261
 # yamllint enable rule:line-length
 
-- name: 'Group | create group {{ _users_group.name }}'
-  when: _users_group is defined and _users_group | length > 0
+- name: '{{ "Group | create " ~ users__group.name }}'
+  when: users__group is defined and users__group | length > 0
   ansible.builtin.group:
-    force: '{{ _users_group.force | default(false) }}'
-    gid: '{{ _users_group.gid | default(omit) }}'
-    local: '{{ _users_group.local | default(false) }}'
-    name: '{{ _users_group.name }}'
-    non_unique: '{{ _users_group.non_unique | default(false) }}'
+    force: '{{ users__group.force | default(false) }}'
+    gid: '{{ users__group.gid | default(omit) }}'
+    gid_max: '{{ users__group.gid_max | default(omit) }}'
+    gid_min: '{{ users__group.gid_min | default(omit) }}'
+    local: '{{ users__group.local | default(false) }}'
+    name: '{{ users__group.name }}'
+    non_unique: '{{ users__group.non_unique | default(false) }}'
     state: 'present'
-    system: '{{ _users_group.system | default(false) }}'
+    system: '{{ users__group.system | default(false) }}'
   vars:
-    _users_group: '{{
-        hostvars[inventory_hostname]["users_group_" ~ group] |
-        default({})
+    users__group: '{{
+        hostvars[inventory_hostname]["users_group_" ~ group] | default({})
       }}'

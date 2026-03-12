@@ -2,8 +2,7 @@
 ###############################################################################
 # Copy Data Extension
 ###############################################################################
-# Verify copy_data extension works properly; apply to both user and role
-# accounts to verify no divergence between account types.
+# Verify copy_data extension works properly.
 #
 # Tests:
 # * User data is copied correctly.
@@ -23,7 +22,7 @@ provisioner:
   inventory:
     group_vars:
       all:
-        users_accounts_users:
+        users_cfg_users:
           - 'user_copy_data'
         users_group_user_copy_data:
           name: 'user_copy_data'
@@ -36,17 +35,10 @@ provisioner:
           extensions:
             include_group: true
             copy_data: 'files/copy_data'
-        users_role_group: '{{ users_group_user_copy_data }}'
-        users_role_user: '{{ users_user_user_copy_data }}'
+        users___group: '{{ users_group_user_copy_data }}'
+        users___user: '{{ users_user_user_copy_data }}'
 platforms:
-  - name: 'users-debian-13-copy_data_extension-user'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-  - name: 'users-debian-13-copy_data_extension-role'
+  - name: 'users-copy-data-extension'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
@@ -55,21 +47,11 @@ platforms:
     pre_build_image: true
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
     - 'converge'
-    # - 'idempotence'  # User accounts are only created once.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

@@ -1,23 +1,23 @@
 ---
-- name: 'Install packages'
+- name: 'Install | packages'
   ansible.builtin.include_role:
     name: 'r_pufky.deb.apt'
   vars:
     apt_packages:
-      - '{{ users_role_packages }}'
+      - '{{ users___packages }}'
       - '{{
-          users_role_high_entropy_packages
-          if users_high_entropy_enable else
+          users___high_entropy_packages
+          if users_flg_high_entropy else
           []
         }}'
-      - '{{ users_role_ssh_keygen_packages }}'
-    apt_package_update_cache: true
+      - '{{ users___ssh_keygen_packages }}'
+    apt_srv_package_update_cache: true
 
 - name: 'Remove groups'
   ansible.builtin.group:
     name: '{{ item }}'
     state: 'absent'
-  loop: '{{ users_accounts_groups_absent | default([]) }}'
+  loop: '{{ users_cfg_groups_absent | default([]) }}'
 
 - name: 'Remove users'
   ansible.builtin.user:
@@ -25,18 +25,18 @@
     force: false
     remove: false
     state: 'absent'
-  loop: '{{ users_accounts_users_absent | default([]) }}'
+  loop: '{{ users_cfg_users_absent | default([]) }}'
 
 - name: 'Manage groups'
   ansible.builtin.include_tasks: 'group.yml'
-  loop: '{{ users_accounts_groups | default([]) }}'
+  loop: '{{ users_cfg_groups | default([]) }}'
   loop_control:
     loop_var: 'group'
   no_log: true  # Passwords.
 
 - name: 'Manage users'
   ansible.builtin.include_tasks: 'user.yml'
-  loop: '{{ users_accounts_users | default([]) }}'
+  loop: '{{ users_cfg_users | default([]) }}'
   loop_control:
     loop_var: 'user'
   no_log: true  # Passwords, GPG keys, SSH keys.

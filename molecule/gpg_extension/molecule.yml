@@ -3,8 +3,7 @@
 ###############################################################################
 # GPG Extension
 ###############################################################################
-# Verify GPG extension works properly; apply to both user and role accounts to
-# verify no divergence between account types.
+# Verify GPG extension works properly.
 #
 # Tests:
 # * gpg.conf exists.
@@ -25,7 +24,7 @@ provisioner:
   inventory:
     group_vars:
       all:
-        users_accounts_users:
+        users_cfg_users:
           - 'user_valid_gpg_keys'
         users_group_user_valid_gpg_keys:
           name: 'user_valid_gpg_keys'
@@ -80,17 +79,8 @@ provisioner:
                     =n8OM
                     -----END PGP PRIVATE KEY BLOCK-----
                   trust: 1
-        users_role_group: '{{ users_group_user_valid_gpg_keys }}'
-        users_role_user: '{{ users_user_user_valid_gpg_keys }}'
 platforms:
-  - name: 'users-debian-13-gpg_extension-user'
-    image: 'ghcr.io/hifis-net/debian-systemd:13'
-    systemd: 'always'
-    volumes:
-      - '/sys/fs/cgroup:/sys/fs/cgroup:ro'
-    command: '/lib/systemd/systemd'
-    pre_build_image: true
-  - name: 'users-debian-13-gpg_extension-role'
+  - name: 'users-gpg-extension'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
@@ -99,21 +89,11 @@ platforms:
     pre_build_image: true
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
     - 'converge'
-    # - 'idempotence'  # User accounts are only created once.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

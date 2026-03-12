@@ -3,12 +3,12 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | /home/user_valid_gpg_keys/.gnupg/gpg.conf'
+    - name: 'Verify | test | /home/user_valid_gpg_keys/.gnupg/gpg.conf'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'file.yml'
       vars:
-        test_name: 'Verify | /home/user_valid_gpg_keys/.gnupg/gpg.conf'
+        test_name: 'Verify | test | /home/user_valid_gpg_keys/.gnupg/gpg.conf'
         test_file: '/home/user_valid_gpg_keys/.gnupg/gpg.conf'
         test_owner: '800'
         test_group: '800'
@@ -16,20 +16,17 @@
         test_state: 'file'
         test_diff: true
 
-    - name: 'Verify | query imported key trust'
+    - name: 'Verify | cmd | query imported key trust'
       ansible.builtin.command: 'gpg --export-ownertrust'
       changed_when: false
       become: true
       become_user: 'user_valid_gpg_keys'
-      register: _test_users_gpg_key_list
+      register: users__test_gpg_key_list
 
-    - name: 'Verify | assert import trust correct'
+    - name: 'Verify | assert | import trust correct'
       ansible.builtin.assert:
         quiet: true
-        that: (_test_users_gpg_key_list.stdout_lines | last | split(":"))[1] == "2"  # yamllint disable-line rule:line-length
+        that: (users__test_gpg_key_list.stdout_lines | last | split(":"))[1] == "2"  # yamllint disable-line rule:line-length
         fail_msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │   user_valid_gpg_keys imported trust NOT correct (expected 2).    │
-          │                                                                   │
-          ╰───────────────────────────────────────────────────────────────────╯
+
+          ✘ user_valid_gpg_keys imported trust NOT correct (expected 2).

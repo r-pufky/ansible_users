@@ -2,12 +2,11 @@
 ###############################################################################
 # Default
 ###############################################################################
-# As these are encapsulated ansible tasks just ensure that sending all options
+# As these are encapsulated ansible tasks just ensure that setting all options
 # successfully executes, as well as toggling user and group options, and
 # minimum configuration (excluding auto UID/GID for more idempotent testing).
 #
 # Tests:
-# * Role executes without error with all options enabled.
 # * Minimum group specifications are enforced.
 # * Minimum user specifications are enforced.
 # * All group options with no syntax errors.
@@ -32,11 +31,11 @@ provisioner:
   inventory:
     group_vars:
       all:
-        users_accounts_groups:
+        users_cfg_groups:
           - 'minimum_group'
           - 'group_all_options'
           - 'user_all_options'
-        users_accounts_users:
+        users_cfg_users:
           - 'minimum_user'
           - 'explicit_user_group'
           - 'user_all_options'
@@ -52,6 +51,8 @@ provisioner:
           name: 'group_all_options'
           force: true
           gid: 820
+          gid_max: 1000
+          gid_min: 0
           local: false
           non_unique: false
           system: true
@@ -87,6 +88,7 @@ provisioner:
           move_home: false
           non_unique: false
           password: '*'
+          password_expire_account_disable: 30
           password_expire_max: 100
           password_expire_min: 90
           password_expire_warn: 14
@@ -103,6 +105,8 @@ provisioner:
           ssh_key_type: 'rsa'
           system: true
           uid: 840
+          uid_max: 10000
+          uid_min: 0
           umask: '022'
           update_password: 'always'
         users_group_user_lockdown:
@@ -129,7 +133,7 @@ provisioner:
           extensions:
             include_group: true
 platforms:
-  - name: 'users-debian-13-default'
+  - name: 'users-default'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
@@ -138,21 +142,11 @@ platforms:
     pre_build_image: true
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
-    # - 'prepare'
     - 'converge'
-    # - 'idempotence'  # User accounts are only created once.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

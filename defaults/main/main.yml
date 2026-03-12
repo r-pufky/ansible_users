@@ -1,14 +1,9 @@
 ---
 ###############################################################################
-# User Options
+# Feature Flags
 ###############################################################################
-# User management. Define users and groups in account_definitions.yml; use
-# users.yml to define how those accounts are managed on each system.
-#
-# Role accounts are used for other roles and not intended for general user
-# management.
 
-# Install high-entropy packages?
+# 1. Install high-entropy packages?
 #
 # Headless servers, VMs, and containers should enable this as it will provide
 # better randomness data for generating secret keys.
@@ -16,4 +11,63 @@
 # Installs: rng-tools, haveged.
 #
 # Default: True.
-users_high_entropy_enable: true
+users_flg_high_entropy: true
+
+###############################################################################
+# Config
+###############################################################################
+# User accounts are automatically detected based on the users_user_ prefix and
+# are created after groups users_group_ definitions. See
+# account_definitions.yml.
+#
+# Generally these definitions should be available via host_vars or group_vars.
+#
+# Accounts are applied in the order:
+#
+#   remove: users ➔ groups
+#   add: groups ➔ users
+
+# Group to add during host configuration.
+#
+# List of group names to add to system (from users_group_{LABEL}).
+#
+# users_cfg_groups:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# Default: [].
+users_cfg_groups: []
+
+# Groups to remove during host configuration.
+#
+# List of group names to remove from system (from users_group_{LABEL}).
+#
+# users_cfg_groups_absent:
+#   - 'examplegroup'
+#   - 'another_group'
+#
+# Default: [].
+users_cfg_groups_absent: []
+
+# Users to add during host configuration.
+#
+# List of user names to add to system (from users_user_{LABEL}).
+#
+# users_cfg_users:
+#   - 'exampleuser'
+#
+# Default: [].
+users_cfg_users: []
+
+# User to remove during host configuration.
+#
+# List of user names to remove from system (from users_user_{LABEL}).
+#
+# Files are explicitly kept to prevent unexpected data loss from files owned by
+# that user being deleted when the account is removed.
+#
+# users_cfg_users_absent:
+#   - 'exampleuser'
+#
+# Default: [].
+users_cfg_users_absent: []

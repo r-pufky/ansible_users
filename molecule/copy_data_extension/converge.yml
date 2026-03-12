@@ -1,19 +1,9 @@
 ---
 - name: 'Converge'
-  hosts: 'users-debian-13-copy_data_extension-user'
+  hosts: 'all'
   gather_facts: false
   tasks:
     - name:
-        'Converge | apply r_pufky.deb.users (user)'
+        'Converge | role | r_pufky.deb.users'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.users'
-
-- name: 'Converge'
-  hosts: 'users-debian-13-copy_data_extension-role'
-  gather_facts: false
-  tasks:
-    - name:
-        'Converge | apply r_pufky.deb.users (role)'
-      ansible.builtin.include_role:
-        name: 'r_pufky.deb.users'
-        tasks_from: 'role_account_add.yml'

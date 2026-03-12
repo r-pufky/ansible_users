@@ -3,12 +3,13 @@
   hosts: 'all'
   gather_facts: false
   tasks:
-    - name: 'Verify | /home/user_copy_data/copy_data/user_files_test'
+    - name: 'Verify | test | /home/user_copy_data/copy_data/user_files_test'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'file.yml'
       vars:
-        test_name: 'Verify | /home/user_copy_data/copy_data/user_files_test'
+        test_name:
+          'Verify | test | /home/user_copy_data/copy_data/user_files_test'
         test_file: '/home/user_copy_data/copy_data/user_files_test'
         test_owner: 'user_copy_data'
         test_group: 'user_copy_data'
