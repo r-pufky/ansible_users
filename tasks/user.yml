@@ -105,7 +105,7 @@
   when: >
     users__user.extensions is defined and
     users__user.extensions.include_group is defined and
-    users__user.extensions.include_group
+    users__user.extensions.include_group | bool
   ansible.builtin.include_tasks: 'group.yml'
   vars:
     group: '{{ users__user.name }}'
@@ -300,6 +300,6 @@
     - name: 'User | cmd | lockdown ~'
       when: >
         users__user.extensions.lockdown is defined and
-        users__user.extensions.lockdown
+        users__user.extensions.lockdown | bool
       ansible.builtin.command: '{{ "chmod -R go-rwx " ~ users__user.home }}'
       changed_when: false
