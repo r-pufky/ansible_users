@@ -193,6 +193,13 @@
             user: '{{ users__user.name }}'
             validate_certs: '{{ item.validate_certs | default(true) }}'
           loop: '{{ users__user.extensions.ssh.authorized_keys }}'
+          loop_control:
+            label: '{{
+                item.key.split()[0] ~ " " ~
+                item.key.split()[2]
+                if item.key.split() | length > 2 else
+                item.key.split()[1][-8:]
+              }}'
 
         # Keep inline instead of include_tasks loop for singular role import.
         - name: 'User | manage SSH keys'
@@ -209,7 +216,8 @@
                 mode: '0400'
                 content: '{{ item.private }}'
               loop: '{{ users__user.extensions.ssh.ssh_keys }}'
-              no_log: true  # Private key.
+              loop_control:
+                label: '{{ item.name | default("id_rsa") }}'
 
             - name: 'User | filesystem | add public keys ~/.ssh/'
               when: item.state | default("present") == 'present'
@@ -223,7 +231,8 @@
                 mode: '0640'  # Prevent file thrashing if lockdown is set.
                 content: '{{ item.public }}'
               loop: '{{ users__user.extensions.ssh.ssh_keys }}'
-              no_log: true  # Private key.
+              loop_control:
+                label: '{{ item.name | default("id_rsa") ~ ".pub" }}'
 
             - name: 'User | filesystem | remove private keys ~/.ssh/'
               when: item.state | default("present") == 'absent'
@@ -233,7 +242,8 @@
                   }}'
                 state: 'absent'
               loop: '{{ users__user.extensions.ssh.ssh_keys }}'
-              no_log: true  # Private key.
+              loop_control:
+                label: '{{ item.name | default("id_rsa") }}'
 
             - name: 'User | filesystem | remove public keys ~/.ssh/'
               when: item.state | default("present") == 'absent'
@@ -244,7 +254,8 @@
                   }}'
                 state: 'absent'
               loop: '{{ users__user.extensions.ssh.ssh_keys }}'
-              no_log: true  # Private key.
+              loop_control:
+                label: '{{ item.name | default("id_rsa") ~ ".pub" }}'
 
         - name: 'User | filesystem | set ~/.ssh/config'
           when: users__user.extensions.ssh.config is defined

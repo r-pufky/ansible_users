@@ -108,7 +108,7 @@ provisioner:
                 Host *
                   StrictHostKeyChecking accept-new
 platforms:
-  - name: 'user-ssh-extension'
+  - name: 'users-ssh-extension'
     image: 'ghcr.io/hifis-net/debian-systemd:13'
     systemd: 'always'
     volumes:
